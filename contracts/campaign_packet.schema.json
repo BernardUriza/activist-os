@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BernardUriza/activist-os/contracts/campaign_packet.schema.json",
+  "title": "CampaignPacket",
+  "description": "Output of REPORTER agent. The full deliverable: everything plus provenance and the safety audit log.",
+  "type": "object",
+  "required": [
+    "concern",
+    "evidence_brief",
+    "campaign_plan",
+    "safety_audit_log",
+    "outreach_pack",
+    "task_board",
+    "assembled_at"
+  ],
+  "properties": {
+    "concern": {
+      "type": "string"
+    },
+    "evidence_brief": {
+      "$ref": "evidence_brief.schema.json"
+    },
+    "campaign_plan": {
+      "$ref": "campaign_plan.schema.json"
+    },
+    "safety_audit_log": {
+      "type": "array",
+      "items": {
+        "$ref": "safety_verdict.schema.json"
+      },
+      "description": "EVERY verdict issued, including rejections — the record of governance"
+    },
+    "outreach_pack": {
+      "$ref": "outreach_pack.schema.json"
+    },
+    "task_board": {
+      "$ref": "task_board.schema.json"
+    },
+    "assembled_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

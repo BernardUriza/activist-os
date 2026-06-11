@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BernardUriza/activist-os/contracts/outreach_pack.schema.json",
+  "title": "OutreachPack",
+  "description": "Output of OUTREACH agent. Only produced for an approved campaign_plan.",
+  "type": "object",
+  "required": [
+    "plan_revision",
+    "items"
+  ],
+  "properties": {
+    "plan_revision": {
+      "type": "integer"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "title",
+          "body"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "email",
+              "social_post",
+              "flyer",
+              "press_note"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "tone": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

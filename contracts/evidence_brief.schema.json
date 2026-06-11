@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BernardUriza/activist-os/contracts/evidence_brief.schema.json",
+  "title": "EvidenceBrief",
+  "description": "Output of EVIDENCE agent. Every claim carries a verdict and tiered sources.",
+  "type": "object",
+  "required": [
+    "concern",
+    "claims",
+    "produced_at"
+  ],
+  "properties": {
+    "concern": {
+      "type": "string",
+      "description": "The community concern as submitted"
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "statement",
+          "verdict",
+          "confidence",
+          "sources"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "supported",
+              "partial",
+              "unsupported"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "url",
+                "provenance_tier",
+                "retrieved_at"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "provenance_tier": {
+                  "enum": [
+                    "fetched_fulltext",
+                    "news_search",
+                    "company_source"
+                  ],
+                  "description": "How the source was read. fetched_fulltext > news_search > company_source."
+                },
+                "quote": {
+                  "type": "string",
+                  "description": "Verbatim supporting excerpt"
+                },
+                "retrieved_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "usable_in_campaign": {
+            "type": "boolean",
+            "description": "False for unsupported claims — they are carried, never used"
+          }
+        }
+      }
+    },
+    "produced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

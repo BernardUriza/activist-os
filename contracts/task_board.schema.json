@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BernardUriza/activist-os/contracts/task_board.schema.json",
+  "title": "TaskBoard",
+  "description": "Output of COORDINATOR agent. Volunteer-ready tasks for groups with zero technical staff.",
+  "type": "object",
+  "required": [
+    "plan_revision",
+    "tasks"
+  ],
+  "properties": {
+    "plan_revision": {
+      "type": "integer"
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "skill",
+          "est_minutes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "skill": {
+            "type": "string",
+            "description": "e.g. 'no skills needed', 'social media', 'design'"
+          },
+          "est_minutes": {
+            "type": "integer",
+            "minimum": 5
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
