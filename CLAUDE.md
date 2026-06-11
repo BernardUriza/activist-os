@@ -49,6 +49,7 @@ centerpiece and the demo's money shot. It never gets cut.
 | `safety.md` | the five checks, veto semantics, audit-log completeness |
 | `pitch.md` | one-liners, framing order, forbidden vocabulary |
 | `language.md` | English chrome; campaigns speak the community's language |
+| `ui.md` | demo UI = fi-glass (og118 pattern): glass-box agent panels, Tailwind gotcha, workspace options |
 | `git.md` | multi-session safety — never lose a parallel agent's work |
 | `working-style.md` | use tools before "no sé"; no permission for trivial fixes; pbcopy for external posts |
 
