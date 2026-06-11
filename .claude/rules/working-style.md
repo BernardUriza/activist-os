@@ -1,0 +1,125 @@
+# Working style — no hallucinations, no blocks
+
+Meta rules about how to operate in this repo. These exist because the user
+caught me failing them, and "no quiero más alucinaciones ni bloqueos" was
+the literal feedback. Treat every line below as a tripwire.
+
+## Use the tools before saying "no sé"
+
+The repo is NOT the only source of truth. If a question can be answered by
+**WebFetch**, **WebSearch**, **gh CLI**, **Bash**, or a **chrome-devtools
+MCP** call, run that BEFORE saying "I don't have that information" or
+"check CLAUDE.local.md".
+
+The concrete failure that triggered this rule: when asked about the
+hackathon judging criteria I said "no los tengo, pégamelos". I had
+**WebSearch + WebFetch + chrome-devtools** available all session. The
+criteria were one fetch away (see `hackathon.md`). That is mediocrity.
+
+How to apply:
+
+1. When the user asks about an external resource (URL, third-party docs,
+   contest rules, vendor pricing, library upstream code), the FIRST move
+   is to fetch it. Not to look in the repo and shrug.
+2. If a WebFetch returns 403/blocked, the FALLBACK is the
+   chrome-devtools MCP — `new_page` + `evaluate_script` to scrape the
+   DOM. lablab.ai is a known JS-heavy site that requires this fallback.
+3. If both fail, THEN say "I tried X and Y, here's what's blocking me".
+   Never say "I don't know" without listing what was attempted.
+
+## Don't ask permission for trivial reversible fixes
+
+A one-line pin bump in a sibling repo, a port change in `docker-compose.dev.yml`,
+a missing import — these don't need a question. Just do them and report
+what you did.
+
+The line that crosses into "ask first":
+
+- changes that touch state visible to others (push, PR, merge, deploy)
+- changes that spend money (real API calls beyond a smoke test)
+- changes that affect Bernard's working tree on OTHER repos (touching
+  free-intelligence files Bernard owns)
+- destructive ops (rm, git reset --hard, dropping DB tables)
+
+Everything else — edit and report.
+
+When the user picked "Tú lo arreglas — paro y espero" on the fi-runner pin
+fix, that was the user enforcing this rule on me: the bump WAS their repo,
+their call. But waiting on a verbatim diff that took 30 seconds to apply
+was friction I should have absorbed by FRAMING it differently — "I'll
+push the fix as a PR, you approve" instead of "tell me yes/no first".
+
+## Don't pretend the chrome-devtools MCP is read-only
+
+The MCP can `evaluate_script`, `type_text`, `press_key`, `click`, drive
+forms. When `mcp__chrome-devtools__fill` fails to trigger a React 19
+onChange, the fallback is `evaluate_script` to focus the field then
+`type_text` with the real keyboard simulation — NOT to abandon the UI
+flow and POST directly to the API.
+
+Document local-dev quirks in `local-dev.md` as they appear during the build week.
+
+## Investigate before declaring "limitation"
+
+Before saying "X doesn't work / X is broken", verify:
+
+1. Is the right service running on the expected port? (`lsof -i :PORT`)
+2. Is the request reaching the service? (server logs vs network panel)
+3. Is the URL the SAME ONE the running service serves? (`localhost` vs
+   `127.0.0.1` matter under React 19 + Turbopack cross-origin guard; see
+   `local-dev.md`)
+
+The "asyncpg can't auth against pgvector" rabbit hole was an hour I lost
+because I didn't check `lsof -i :5432` first. There was a co-resident
+Postgres (Tilt) eating the port. The lesson: check the bottom of the
+stack BEFORE blaming the top.
+
+## External-channel posts: draft → pbcopy → user posts
+
+When the user wants to share something on a third-party platform (Discord,
+X / Twitter, LinkedIn, lablab.ai forms, dev.to, etc.), the workflow is:
+
+1. **Draft in product voice.** Match the tone the product already speaks
+   (for activist-os: serious, evidence-forward, constructive, no corporate-speak,
+   no emoji excess). One short hook line, then the body, then the URLs. No
+   marketing fluff.
+2. **Tailor per channel.** A `#participants-chat` post reads differently
+   than a `#track-1` post: the first is casual, the second is
+   technical/business. If multiple channels, draft multiple.
+3. **`pbcopy` it.** Use heredoc → `pbcopy`, then verify with `pbpaste |
+   head -3` + char count. Don't make the user retype anything you wrote.
+4. **Report the platform limits.** Discord 2000, X 280, LinkedIn 3000,
+   etc. Cap or split if over. Show the user the char count so they know
+   it fits before pasting.
+5. **Never auto-post to user-visible channels.** Even with browser
+   access (chrome-devtools MCP), leave the message in the composer
+   UN-SENT or hand it via clipboard. Posting to a real audience is a
+   "state visible to others" action — user keeps the Send button.
+
+How NOT to do this:
+- Don't propose three variants when the user asked for "a draft" — ship
+  ONE focused version. Variants come if the user asks.
+- Don't include the channel name / platform header inside the message
+  body itself ("**Post A — for #participants-chat**" doesn't belong on
+  the clipboard).
+- Don't add emojis the product wouldn't use, even if "Discord culture"
+  suggests them. The product's voice is the same in chat and on Discord.
+
+The concrete failure that triggered this rule: I almost asked Bernard
+to retype the post from the chat into Discord by hand. He pointed at
+`pbcopy`. That was friction I should have absorbed automatically.
+
+## Match scope to ask — don't trickle-ask
+
+When the user picks an option, EXECUTE the option. Don't follow up with
+"and also one more clarification" unless the new info genuinely changes
+the work. The user already paid the context-switch cost picking. Burn
+through the work, ask only when blocked on a real branch.
+
+## Memory is persistent — use it
+
+The auto-memory system at
+`the project's auto-memory directory (survives across sessions)`
+survives across sessions. When the user says "no quiero alucinaciones",
+that's a STANDING instruction — save it as a feedback memory so the
+next session reads it on boot. Don't re-learn the same lesson twice.
