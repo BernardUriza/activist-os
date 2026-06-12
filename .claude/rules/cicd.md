@@ -119,3 +119,21 @@ CI/CD is **not kickoff-week work**. Priority order (from `hackathon.md`):
 Stand up the Container App and Static Web App manually first (one `az` command
 each). Wire the GitHub Actions workflows on Jun 17–18 once the core demo is
 stable. Don't burn build days on infra automation before the product exists.
+
+## No absolute local paths in runtime code
+
+Runtime code never hardcodes absolute paths from a dev machine
+(`/Users/bernard...`). Every `.env` location, config file, credential and
+data path resolves through environment variables, repo-relative paths, or
+mounted paths — absolute local paths are development-only and must not ship.
+
+**Why:** `band_agents/*.py` shipped
+`load_dotenv('/Users/bernardurizaorozco/.../api/.env')` — works on the Mac,
+dies silently inside the Azure Container App where that path doesn't exist.
+
+How to apply:
+
+1. Resolve relative to the module: `Path(__file__).resolve().parent` — or
+   read an env var with a sane default (`os.getenv("ENV_FILE", ...)`).
+2. Grep before shipping an image: `grep -rn "/Users/" api/ --include="*.py"`
+   must come back empty.

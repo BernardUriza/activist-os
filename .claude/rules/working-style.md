@@ -165,3 +165,22 @@ The auto-memory system at
 survives across sessions. When the user says "no quiero alucinaciones",
 that's a STANDING instruction — save it as a feedback memory so the
 next session reads it on boot. Don't re-learn the same lesson twice.
+
+## Use the project interpreter, not system Python
+
+Backend validations (pytest, scripts, smoke checks) run through the project
+venv — `api/.venv/bin/python` — never a bare `python3`. Homebrew/system
+Python doesn't have the project deps (`thenvoi_rest`, etc.) and produces
+false reds that look like broken code.
+
+The concrete failure: a session ran `python3 -m pytest` and got 4 red tests
+(`ModuleNotFoundError: thenvoi_rest`); the same suite was green under
+`api/.venv/bin/python`. Diagnose the interpreter BEFORE diagnosing the code.
+
+How to apply:
+
+1. `cd api && .venv/bin/python -m pytest tests/ -q` is the canonical test
+   command. Same for ruff if installed in the venv, else the system ruff.
+2. If a dependency import fails, check `which python` / the venv first —
+   don't report the failure as a code regression until the interpreter is
+   confirmed correct.

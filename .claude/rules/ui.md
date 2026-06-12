@@ -71,3 +71,17 @@ or editing get built. Impressive interactive UI can hide broken
 coordination; a read-only shell over real handoff history cannot. The mock
 fallback must label itself as mock on screen — never pass hand-written copy
 off as agent output.
+
+## Live panels render payload-derived artifacts, not story copy
+
+Every live UI panel (safety gate, packet preview, evidence brief) reads
+from `/history`'s `artifacts` object — values the API derives from the
+typed handoff payloads — never from copy written into the HTML. Hardcoded
+story copy is allowed in exactly two places: the web mock fallback (behind
+a visible `MOCK FALLBACK` badge) and stub-agent fixtures in the agents
+layer. Anything else is a narrated demo, which `architecture.md` rule #9
+forbids.
+
+How to apply: when adding a panel, add the field to `_build_artifacts()`
+in `api/app/main.py` first, then render `data.artifacts.*` — if the value
+isn't derivable from a payload, the panel doesn't ship.

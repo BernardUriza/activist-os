@@ -74,3 +74,20 @@ no tricks, and never lose work done by the other agents.**
 - The live site only deploys on a green build, so a red `master` doesn't
   take the site down — but it blocks the next agent's deploy. Green it by
   completing the snapshot, not by amputating their work.
+
+## Separate commits by review surface
+
+When a session touches multiple surfaces, commit them separately by
+concern: rules/docs, backend/API/tests, frontend/demo, CI/deploy. No
+hackathon mega-commits bundling unrelated areas.
+
+**Why:** the split makes checkpoints auditable and reversible — a technical
+revert on `api/` never drags the learning captured in `.claude/rules/` down
+with it, and each commit message can actually describe its diff.
+
+How to apply:
+
+1. Before committing, group `git status` output by area and `git add` each
+   group separately.
+2. One commit = one coherent area. If a change spans areas out of necessity
+   (an API change its demo consumes), say so in the commit body.
