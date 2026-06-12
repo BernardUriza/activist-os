@@ -195,78 +195,74 @@
         </div>
 
         <!-- 3. FastAPI -->
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">FastAPI booting — <code class="fi-mono text-xs" style="color:var(--fi-evidence)">GET /health · POST /workflow/start · GET /workflow/{id}/events</code></p>
-            <p class="task-note">Port from insult-ai api/. Add SSE /events endpoint from day 1 (later visualizes Band handoffs).</p>
+            <p class="task-note">api/app/main.py — /health 200, SSE /events live. Running on :8001.</p>
           </div>
         </div>
 
         <!-- 4. LocalTransport -->
-        <div class="task blocked" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
-            <p class="task-label">LocalTransport interface — <code class="fi-mono text-xs" style="color:var(--fi-veto)">blocks Band integration</code></p>
-            <p class="task-note">Transport interface: publish / subscribe / send_handoff / get_context.<br>
-            LocalTransport = in-memory. BandTransport = slot waiting for SDK. Swap at kickoff, don't rewrite the product.</p>
+            <p class="task-label">LocalTransport interface — BandTransport slot ready</p>
+            <p class="task-note">api/app/runner/transports/ — base.py + local_transport.py (in-memory) + band_transport.py (stub). Swap = one import change.</p>
           </div>
         </div>
 
         <!-- 5. WorkflowRunner -->
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">WorkflowRunner — orchestrates the 6-agent chain</p>
-            <p class="task-note">api/app/runner/workflow_runner.py — deterministic, contract-validated. Port from insult-ai runner.</p>
+            <p class="task-note">api/app/runner/workflow_runner.py — deterministic, contract-validated. MAX_VETO_CYCLES=3 guard.</p>
           </div>
         </div>
 
-        <!-- 6. 6 stub agents -->
-        <div class="task partial" data-weight="0.5">
+        <!-- 6. 6 agents -->
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
-            <p class="task-label">6 stub agents with typed I/O</p>
-            <p class="task-note">✅ Folders + SPEC.md exist: evidence · campaign · safety · outreach · coordinator · reporter<br>
-            ❌ Missing: actual Python stubs that accept/return contracts (not SPEC.md — running code)</p>
+            <p class="task-label">6 agents with typed I/O</p>
+            <p class="task-note">evidence · campaign · safety · outreach · coordinator · reporter — typed contracts in/out. safety_agent runs the 5 checks.</p>
           </div>
         </div>
 
         <!-- 7. Safety veto loop -->
-        <div class="task blocked" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
-            <p class="task-label">Safety veto loop running end-to-end — <code class="fi-mono text-xs" style="color:var(--fi-veto)">the money shot</code></p>
-            <p class="task-note">Campaign → Safety (veto) → Campaign (rewrite) → Safety (approve). On record in audit trail.<br>
-            This is the judging criterion #1 demo. Cannot be cut.</p>
+            <p class="task-label">Safety veto loop running end-to-end — the money shot</p>
+            <p class="task-note">Draft 1 VETOED ("is lying"). Campaign rewrites. Safety APPROVES. veto_count=1 in audit trail.</p>
           </div>
         </div>
 
         <!-- 8. CampaignPacket -->
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">CampaignPacket assembled by Reporter</p>
-            <p class="task-note">Final output: evidence brief + campaign message + outreach copy + task plan + provenance + safety audit log.</p>
+            <p class="task-note">reporter_agent bundles brief + campaign + outreach + tasks + full audit trail (including the veto).</p>
           </div>
         </div>
 
         <!-- 9. SSE / event stream -->
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">SSE event stream <code class="fi-mono text-xs" style="color:var(--fi-evidence)">GET /workflow/{id}/events</code></p>
-            <p class="task-note">Server-sent events from day 1. The web demo and the judges read agent handoffs in real time from here.</p>
+            <p class="task-note">StreamingResponse in main.py — replays existing events + streams new ones until run completes.</p>
           </div>
         </div>
 
         <!-- 10. Smoke test -->
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="1">
           <span class="task-dot"></span>
           <div>
-            <p class="task-label">Smoke test green — <code class="fi-mono text-xs">make smoke</code></p>
-            <p class="task-note">Input: "Restaurant X claims 100% compostable packaging but local waste systems don't process it."<br>
-            Expected: EvidenceBrief → CampaignDraft → VETO → rewrite → approve → OutreachPlan → VolunteerTasks → CampaignPacket → audit trail.</p>
+            <p class="task-label">Smoke test green — <code class="fi-mono text-xs">make smoke</code> · 7/7 passed</p>
+            <p class="task-note">EvidenceBrief ✓ · VETO ✓ · rewrite ✓ · approved ✓ · CampaignPacket ✓ · audit has veto+approval ✓ · rejection ships in packet ✓</p>
           </div>
         </div>
       </div>
