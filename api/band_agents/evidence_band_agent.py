@@ -7,7 +7,7 @@ import logging
 from band import Agent
 from oauth_adapter import make_adapter
 from band.config import load_agent_config
-from dotenv import load_dotenv
+from env import load_local_env
 
 logging.basicConfig(level=logging.INFO)
 
@@ -46,7 +46,7 @@ Be honest about what you can and cannot verify. Provenance integrity is non-nego
 
 
 async def main():
-    load_dotenv('/Users/bernardurizaorozco/Documents/activist-os/api/.env')
+    load_local_env()
     adapter = make_adapter(custom_section=SYSTEM_PROMPT)
     agent_id, api_key = load_agent_config("evidence")
     agent = Agent.create(adapter=adapter, agent_id=agent_id, api_key=api_key)

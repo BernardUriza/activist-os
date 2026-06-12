@@ -4,3 +4,10 @@ pydantic>=2.7.0
 python-dotenv>=1.0.0
 httpx>=0.27.0
 anthropic>=0.28.0
+# Band coordination layer (BandTransport + band agent processes)
+band-sdk>=1.0.0
+thenvoi-client-rest>=0.0.7
+PyYAML>=6.0
+# Test toolchain (CI runs pytest from this same file)
+pytest>=8.0
+pytest-asyncio>=0.23

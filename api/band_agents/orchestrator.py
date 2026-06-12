@@ -10,7 +10,7 @@ import sys
 from band import Agent
 from oauth_adapter import make_adapter
 from band.config import load_agent_config
-from dotenv import load_dotenv
+from env import load_local_env
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +33,7 @@ You hold the send button. The system assembles; humans execute."""
 
 
 async def main():
-    load_dotenv('/Users/bernardurizaorozco/Documents/activist-os/api/.env')
+    load_local_env()
 
     concern = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
         "Restaurant X claims 100% compostable packaging, "
