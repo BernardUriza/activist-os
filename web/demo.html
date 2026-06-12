@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Activist OS — Coordination Demo</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%AC%A1%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/x-icon" href="branding/favicon.ico" />
+  <link rel="apple-touch-icon" href="branding/apple-touch-icon.png" />
   <meta name="description" content="Read-only demo shell: the canonical coordination history of an Activist OS run — the CAMPAIGN ⇄ SAFETY veto loop, rendered from the real transport, not narrated." />
+  <meta property="og:title" content="Activist OS — Coordination Demo" />
+  <meta property="og:description" content="A multi-agent workflow for safe, evidence-backed civic advocacy. Band coordinates the agents. FI preserves memory and provenance. Safety gates every public action." />
+  <meta property="og:image" content="branding/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="branding/twitter-card.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,11 +55,15 @@
     }
 
     .fi-shell-bg {
-      position: fixed; inset: 0; z-index: -1;
+      position: fixed; inset: 0; z-index: -2;
       background:
         radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--fi-accent), transparent 86%), transparent 70%),
         radial-gradient(50rem 50rem at 95% 0%, color-mix(in srgb, var(--fi-evidence), transparent 90%), transparent 70%),
         radial-gradient(70rem 50rem at 50% 120%, color-mix(in srgb, var(--fi-accent), transparent 92%), transparent 70%);
+    }
+    #synapse {
+      position: fixed; inset: 0; z-index: -1;
+      pointer-events: none; opacity: .9;
     }
 
     .fi-glass-panel {
@@ -122,9 +133,14 @@
 </head>
 <body class="min-h-screen">
   <div class="fi-shell-bg"></div>
+  <canvas id="synapse" aria-hidden="true"></canvas>
+  <script src="synapse-field.js" defer></script>
 
   <header class="max-w-[1500px] mx-auto px-5 pt-6 pb-4 flex flex-wrap items-center gap-3">
-    <h1 class="text-lg font-bold tracking-tight">⬡ Activist OS — Coordination Demo</h1>
+    <h1 class="text-lg font-bold tracking-tight flex items-center gap-2">
+      <img src="branding/emblem.png" alt="Activist OS" width="28" height="28" style="border-radius: 6px; opacity: .92;" />
+      Activist OS — Coordination Demo
+    </h1>
     <span id="transport-badge" class="fi-badge fi-badge--local">LOCAL</span>
     <span id="source-badge" class="fi-badge fi-badge--provenance">MOCK FALLBACK</span>
     <span class="fi-badge fi-badge--provenance">PROVENANCE</span>
@@ -460,5 +476,11 @@
     }
     load();
   </script>
+
+  <footer class="max-w-[1500px] mx-auto px-5 pb-8 pt-4 flex items-center gap-3" style="border-top: 1px solid var(--fi-border-soft); margin-top: 2rem;">
+    <img src="branding/logo-white.png" alt="Activist OS" height="22" style="height: 22px; width: auto; opacity: .55;" />
+    <span class="fi-mono text-xs" style="color: var(--fi-faint);">Evidence. Coordination. Safety.</span>
+    <a href="checklist.html" class="fi-mono text-xs ml-auto" style="color: var(--fi-faint); text-decoration: none;">Pre-kickoff checklist →</a>
+  </footer>
 </body>
 </html>

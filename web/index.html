@@ -63,11 +63,15 @@
     .fi-shell-bg {
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: -2;
       background:
         radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--fi-accent), transparent 86%), transparent 70%),
         radial-gradient(50rem 50rem at 95% 0%, color-mix(in srgb, var(--fi-evidence), transparent 90%), transparent 70%),
         radial-gradient(70rem 50rem at 50% 120%, color-mix(in srgb, var(--fi-accent), transparent 92%), transparent 70%);
+    }
+    #synapse {
+      position: fixed; inset: 0; z-index: -1;
+      pointer-events: none; opacity: .9;
     }
 
     /* ── Glass primitives ─────────────────────────────────────────── */
@@ -152,6 +156,8 @@
 
 <body>
   <div class="fi-shell-bg"></div>
+  <canvas id="synapse" aria-hidden="true"></canvas>
+  <script src="synapse-field.js" defer></script>
 
   <!-- ── Nav ─────────────────────────────────────────────────────── -->
   <header class="sticky top-0 z-50 backdrop-blur-md" style="background: color-mix(in srgb, var(--fi-bg), transparent 25%); border-bottom: 1px solid var(--fi-border-soft);">
