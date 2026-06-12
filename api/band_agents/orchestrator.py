@@ -8,7 +8,7 @@ import asyncio
 import logging
 import sys
 from band import Agent
-from band.adapters.anthropic import AnthropicAdapter
+from oauth_adapter import make_adapter
 from band.config import load_agent_config
 from dotenv import load_dotenv
 
@@ -33,7 +33,7 @@ You hold the send button. The system assembles; humans execute."""
 
 
 async def main():
-    load_dotenv()
+    load_dotenv('/Users/bernardurizaorozco/Documents/activist-os/api/.env')
 
     concern = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
         "Restaurant X claims 100% compostable packaging, "
@@ -42,11 +42,7 @@ async def main():
 
     logging.info(f"Starting workflow for concern: {concern[:80]}...")
 
-    adapter = AnthropicAdapter(
-        model="claude-sonnet-4-6",
-        custom_section=SYSTEM_PROMPT,
-        enable_execution_reporting=True,
-    )
+    adapter = make_adapter(custom_section=SYSTEM_PROMPT)
 
     agent_id, api_key = load_agent_config("evidence")  # uses Evidence creds to bootstrap
     agent = Agent.create(adapter=adapter, agent_id=agent_id, api_key=api_key)

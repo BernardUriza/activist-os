@@ -41,6 +41,9 @@ class LocalTransport(Transport):
             handoff = await q.get()
             yield handoff
 
+    async def get_handoffs(self, run_id: str) -> list[AgentHandoff]:
+        return list(self._handoffs[run_id])
+
     async def record_event(self, event: AuditEvent) -> None:
         self._events[event.run_id].append(event)
 

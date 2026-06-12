@@ -12,7 +12,6 @@ Expected path:
   Reporter emits CampaignPacket
   audit_events contains the veto and the approval
 """
-import asyncio
 import pytest
 
 from app.models import SafetyStatus, WorkflowRun, WorkflowStatus

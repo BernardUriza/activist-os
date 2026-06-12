@@ -17,6 +17,10 @@ from app.models import AgentHandoff, AuditEvent
 
 class Transport(ABC):
 
+    # Agents that coordinate through this transport without being real
+    # participants of the coordination layer (see BandTransport).
+    virtual_agents: frozenset[str] = frozenset()
+
     @abstractmethod
     async def send_handoff(self, handoff: AgentHandoff) -> None:
         """Publish a validated AgentHandoff to the coordination layer."""
@@ -24,6 +28,10 @@ class Transport(ABC):
     @abstractmethod
     async def subscribe(self, run_id: str) -> AsyncIterator[AgentHandoff]:
         """Yield incoming handoffs for a given run (used by SSE endpoint)."""
+
+    @abstractmethod
+    async def get_handoffs(self, run_id: str) -> list[AgentHandoff]:
+        """Return the full ordered coordination history for a run."""
 
     @abstractmethod
     async def record_event(self, event: AuditEvent) -> None:

@@ -8,7 +8,6 @@ Safety can veto up to MAX_VETO_CYCLES times before the run is blocked.
 """
 from __future__ import annotations
 
-import asyncio
 from datetime import datetime, timezone
 
 from app.models import (

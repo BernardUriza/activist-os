@@ -6,7 +6,7 @@ Run as: python band_agents/outreach_band_agent.py
 import asyncio
 import logging
 from band import Agent
-from band.adapters.anthropic import AnthropicAdapter
+from oauth_adapter import make_adapter
 from band.config import load_agent_config
 from dotenv import load_dotenv
 
@@ -37,12 +37,8 @@ Forbidden: claims not in the approved campaign plan. Forbidden: personal names o
 
 
 async def main():
-    load_dotenv()
-    adapter = AnthropicAdapter(
-        model="claude-sonnet-4-6",
-        custom_section=SYSTEM_PROMPT,
-        enable_execution_reporting=True,
-    )
+    load_dotenv('/Users/bernardurizaorozco/Documents/activist-os/api/.env')
+    adapter = make_adapter(custom_section=SYSTEM_PROMPT)
     agent_id, api_key = load_agent_config("outreach")
     agent = Agent.create(adapter=adapter, agent_id=agent_id, api_key=api_key)
     logging.info("Outreach agent running...")
