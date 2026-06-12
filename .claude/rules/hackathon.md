@@ -53,6 +53,52 @@ Source: verbatim from hackathon page. No re-verification needed at kickoff.
 | 3 | Business Value | "How clearly does the project solve a real enterprise workflow problem? Strong submissions should address a meaningful business process, reduce manual coordination, improve decision-making, accelerate execution, or make a complex workflow easier to operate." | "The missing ops layer for orgs with no staff" — campaign packet = hours of specialist work, governed and auditable |
 | 4 | Originality | "How creatively does the project use multi-agent collaboration? Strong submissions should go beyond a simple chatbot, single-agent assistant, or linear automation, and demonstrate what becomes possible when agents can discover each other, coordinate, divide work, review outputs, escalate issues, or collaborate across frameworks." | Safety-gated advocacy with tiered provenance + veto loop is architecturally novel — not a linear pipeline |
 
+## Confirmed at kickoff stream (Jun 12, 2026)
+
+Source: Twitch stream slides — lablabai, 09:15 AM PDT.
+
+### Sponsors — what's mandatory vs optional
+
+| Sponsor | Role | Required? |
+|---|---|---|
+| **Band** | Coordination layer — the graded surface | **YES — mandatory** |
+| AI/ML API | Unified inference API (400+ models, OpenAI-compatible) | No — optional |
+| Featherless AI | Serverless open-source model hosting (30K+ models, $20M Series A Apr 2026) | No — optional |
+| lablab.ai | Hackathon platform | No |
+
+Bernard uses Claude OAuth → AI/ML API and Featherless AI are not needed.
+**Credits disponibles (opcionales — Bernard usa Claude OAuth):**
+
+| Sponsor | Código | Crédito | Disponibilidad | Vigencia |
+|---|---|---|---|---|
+| AI/ML API | QR en stream | $10/persona | Hasta 500 | — |
+| Featherless AI | `BOA26` | $25/persona | Hasta 1,000 | 1 mes desde activación |
+| Band Pro | `BANDHACK26` | 1 mes Pro gratis | — | — |
+
+Featherless: redimir en featherless.ai con código `BOA26` (setup guide en QR del stream).
+Solo vale la pena si Band requiere un modelo open-source específico. Con Claude OAuth, ninguno es necesario.
+
+### "Meaningful usage" rule (confirmed verbatim from slide)
+
+> **"Collaboration happens through Band — not only before or after the workflow, and not as a thin wrapper."**
+
+This is the disqualification line. Activist OS passes because:
+- Every `AgentHandoff` (typed, schema-validated) travels through the Transport layer.
+- The CAMPAIGN ⇄ SAFETY veto loop exchanges are Band messages, not in-process calls.
+- Band coordination history shows the handoffs — judges can see them, not just read about them.
+
+A thin wrapper = calling Band only to log results after the work is done. That fails. Real coordination = agents exchange context, wait for responses, and change behavior based on what Band delivers. That's what the veto loop does.
+
+### Confirmed event schedule
+
+| Date | Event |
+|---|---|
+| Jun 12 (today) | Kick-Off · Band/AI/ML API/Featherless Opening Words · Challenge intro · Hackathon Guide · Discord Q&A |
+| Jun 17 (Wed) 7 PM CEST | Panel: "The Next Layer of AI: When Agents Start Talking to Each Other" — Band · AI/ML API · Featherless · lablab |
+| Jun 19 (Fri) 5 PM CEST | **Hard submission deadline** |
+
+Band contact: **Ofer Mendelevitch** (Head of Developer Relations) — presenting at kickoff.
+
 ## Priorities when time runs short (in order)
 
 1. The veto loop working through Band (the differentiator).

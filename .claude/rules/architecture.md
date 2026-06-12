@@ -39,6 +39,23 @@ not here. This repo adds: agent configs, contracts, Band wiring, a demo UI.
 6. **Humans hold the send button.** The system assembles campaign packets;
    it never publishes to a real audience on its own. The HITL checkpoint
    before packet release is product, not friction.
+7. **Provider logic belongs upstream.** This repo never hardcodes model
+   provider clients, API keys, base URLs, or SDKs. Agents consume
+   `fi_runner.models` abstractions (`ctx.models.resolve(...)`) — FI decides
+   where cognition runs; Activist OS only consumes the capability. A provider
+   SDK import in this repo is a thin-consumer violation.
+8. **Transport swaps require contract smoke parity.** Any new transport must
+   pass the same transport-agnostic smoke as LocalTransport
+   (`tests/test_transport_contract.py`): the canonical 8-step agent order
+   plus SAFETY_VETO followed by SAFETY_APPROVED, with an equivalent
+   coordination history. No UI or demo work depends on a transport until
+   that contract is green — this is what made LocalTransport → BandTransport
+   a drop-in instead of a rewrite.
+9. **Coordination history is the source of truth for the narrative.** The
+   product story renders from real `Transport.get_handoffs()` /
+   `GET /workflow/{run_id}/history` — never from hand-written demo copy.
+   A static fallback is allowed only when clearly labeled as mock/fallback
+   on screen.
 
 ## Cut order when the week compresses
 

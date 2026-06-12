@@ -53,6 +53,7 @@ centerpiece and the demo's money shot. It never gets cut.
 | `git.md` | multi-session safety — never lose a parallel agent's work |
 | `working-style.md` | use tools before "no sé"; no permission for trivial fixes; pbcopy for external posts |
 | `cicd.md` | Azure deploy topology (Container Apps + SWA), OIDC auth, GHCR, smoke test — mirrors insult-ai |
+| `coagent.md` | ChatGPT⇄Claude relay protocol: one-step contract, scope firewall, validate-before/after-write, cycle budget |
 
 ## Status & key dates
 

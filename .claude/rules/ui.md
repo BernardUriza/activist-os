@@ -62,3 +62,12 @@ panels (the verdict/veto panel, the packet viewer), branding. Everything
 chat/agent-surface shaped comes from fi-glass. If a primitive is missing,
 it gets built **upstream in fi-glass** and consumed here (thin-consumer
 doctrine, same as fi-runner).
+
+## Build read-only truth before live interaction
+
+Demo UI renders a **real completed run first** (`web/demo.html` reading
+`GET /workflow/{run_id}/history`) before any start buttons, SSE streaming,
+or editing get built. Impressive interactive UI can hide broken
+coordination; a read-only shell over real handoff history cannot. The mock
+fallback must label itself as mock on screen — never pass hand-written copy
+off as agent output.

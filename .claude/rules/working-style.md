@@ -27,6 +27,29 @@ How to apply:
 3. If both fail, THEN say "I tried X and Y, here's what's blocking me".
    Never say "I don't know" without listing what was attempted.
 
+## Use the browser to do setup tasks — don't hand them back
+
+When a task requires UI interactions on a web platform (filling forms, registering
+agents, clicking through setup wizards, copying UUIDs, redeeming promo codes),
+use the `chrome-devtools` MCP to do it instead of asking Bernard to do it manually.
+
+Examples of tasks to absorb:
+- Registering agents at app.band.ai/agents (External Agent setup, copy UUID/API key)
+- Redeeming promo codes (BANDHACK26, BOA26) on billing pages
+- Filling in config files with values obtained from those UI flows
+- Any "go to X, click Y, copy Z" step that can be done via `evaluate_script` + `click`
+
+The concrete failure that triggered this rule: I told Bernard "you need to register
+6 agents at app.band.ai manually" when Chrome DevTools MCP was available the whole
+time. That is friction I should absorb.
+
+How to apply:
+1. Before saying "you need to do X on Y website", check if chrome-devtools MCP
+   can reach that URL.
+2. Navigate, fill, click, extract — then write the result directly into the config file.
+3. Only escalate to Bernard when authentication is required that Claude cannot
+   provide (e.g., Google OAuth popup, 2FA, captcha).
+
 ## Don't ask permission for trivial reversible fixes
 
 A one-line pin bump in a sibling repo, a port change in `docker-compose.dev.yml`,
