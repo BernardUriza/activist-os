@@ -116,6 +116,25 @@ When the user picks an option, EXECUTE the option. Don't follow up with
 the work. The user already paid the context-switch cost picking. Burn
 through the work, ask only when blocked on a real branch.
 
+## Keep the pre-kickoff checklist current
+
+`web/checklist.html` is the living status board for this project. After completing
+any meaningful unit of work — a contract added, a stub agent written, a phase
+unblocked, the API booting, a smoke test green — update the corresponding task's
+state in that file (change the `class` on the `.task` div: `done`, `partial`, or
+remove `blocked`).
+
+How to apply:
+
+1. Identify which checklist item the completed work maps to.
+2. Update the `class` on its `.task` div in `web/checklist.html`.
+3. If the item's `task-note` is now stale (e.g. it said "missing: X" and X is now
+   done), update the note too.
+4. Do NOT update the checklist for cosmetic or doc-only changes — only for
+   substantive progress that moves a task state forward.
+5. The checklist lives at `http://localhost:8080/checklist.html` while the static
+   server is running (started with `python3 -m http.server 8080` from `web/`).
+
 ## Memory is persistent — use it
 
 The auto-memory system at

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activist OS — Pre-Kickoff Checklist</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%AC%A1%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --fi-bg:             #07090f;
+      --fi-surface:        rgba(255,255,255,0.06);
+      --fi-surface-strong: rgba(255,255,255,0.10);
+      --fi-border:         rgba(255,255,255,0.14);
+      --fi-border-soft:    rgba(255,255,255,0.07);
+      --fi-text:           rgba(255,255,255,0.92);
+      --fi-muted:          rgba(255,255,255,0.55);
+      --fi-faint:          rgba(255,255,255,0.35);
+      --fi-accent:    #8b5cf6;
+      --fi-evidence:  #38bdf8;
+      --fi-safety:    #f59e0b;
+      --fi-approved:  #22c55e;
+      --fi-veto:      #ef4444;
+      --fi-done:      #22c55e;
+      --fi-partial:   #f59e0b;
+      --fi-todo:      rgba(255,255,255,0.22);
+      --fi-block:     #ef4444;
+      --fi-blur: 20px;
+      --fi-radius-lg: 20px;
+      --fi-radius-md: 14px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--fi-bg);
+      color: var(--fi-text);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .fi-bg-radial {
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(55rem 45rem at 5% -5%, color-mix(in srgb, var(--fi-accent), transparent 88%), transparent 70%),
+        radial-gradient(40rem 40rem at 95% 5%, color-mix(in srgb, var(--fi-evidence), transparent 92%), transparent 70%);
+    }
+    .fi-glass {
+      background: var(--fi-surface);
+      border: 1px solid var(--fi-border);
+      backdrop-filter: blur(var(--fi-blur));
+      -webkit-backdrop-filter: blur(var(--fi-blur));
+      border-radius: var(--fi-radius-lg);
+    }
+    .fi-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .text-muted { color: var(--fi-muted); }
+    .text-faint { color: var(--fi-faint); }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--fi-faint);
+    }
+
+    /* ── Task items ──────────────────────────────────────────────── */
+    .task {
+      display: flex; align-items: flex-start; gap: .8rem;
+      padding: .7rem .8rem; border-radius: 10px;
+      border: 1px solid transparent;
+      transition: background .15s ease, border-color .15s ease;
+      cursor: pointer;
+    }
+    .task:hover { background: var(--fi-surface); }
+    .task.done { border-color: color-mix(in srgb, var(--fi-done), transparent 70%); background: color-mix(in srgb, var(--fi-done), transparent 95%); }
+    .task.partial { border-color: color-mix(in srgb, var(--fi-partial), transparent 70%); background: color-mix(in srgb, var(--fi-partial), transparent 95%); }
+    .task.blocked { border-color: color-mix(in srgb, var(--fi-block), transparent 70%); background: color-mix(in srgb, var(--fi-block), transparent 95%); }
+
+    .task-dot {
+      flex-shrink: 0; margin-top: .22rem;
+      width: 1.1rem; height: 1.1rem; border-radius: 999px;
+      border: 2px solid var(--fi-todo);
+      display: grid; place-items: center;
+      font-size: .55rem; font-weight: 700;
+      transition: all .15s ease;
+    }
+    .task.done .task-dot  { background: var(--fi-done); border-color: var(--fi-done); color: #000; }
+    .task.done .task-dot::after { content: "✓"; }
+    .task.partial .task-dot { background: var(--fi-partial); border-color: var(--fi-partial); color: #000; }
+    .task.partial .task-dot::after { content: "~"; }
+    .task.blocked .task-dot { background: var(--fi-block); border-color: var(--fi-block); color: #fff; }
+    .task.blocked .task-dot::after { content: "⊘"; }
+
+    .task-label { font-size: .92rem; font-weight: 500; line-height: 1.4; }
+    .task.done .task-label { text-decoration: line-through; color: var(--fi-muted); }
+    .task-note { font-size: .8rem; color: var(--fi-faint); margin-top: .25rem; font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Progress bar ────────────────────────────────────────────── */
+    .progress-track {
+      height: 6px; border-radius: 999px;
+      background: var(--fi-surface-strong);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--fi-accent), var(--fi-approved));
+      transition: width .4s ease;
+    }
+
+    /* ── Phase badge ─────────────────────────────────────────────── */
+    .phase-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .25rem .65rem; border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .phase-pre  { color: var(--fi-evidence); border-color: color-mix(in srgb, var(--fi-evidence), transparent 60%); background: color-mix(in srgb, var(--fi-evidence), transparent 90%); }
+    .phase-kick { color: var(--fi-accent);   border-color: color-mix(in srgb, var(--fi-accent), transparent 60%);   background: color-mix(in srgb, var(--fi-accent), transparent 90%); }
+    .phase-demo { color: var(--fi-approved); border-color: color-mix(in srgb, var(--fi-approved), transparent 60%); background: color-mix(in srgb, var(--fi-approved), transparent 90%); }
+    .phase-band { color: var(--fi-safety);   border-color: color-mix(in srgb, var(--fi-safety), transparent 60%);   background: color-mix(in srgb, var(--fi-safety), transparent 90%); }
+  </style>
+</head>
+<body>
+  <div class="fi-bg-radial"></div>
+
+  <!-- Nav -->
+  <header class="sticky top-0 z-50 backdrop-blur-md" style="background: color-mix(in srgb, var(--fi-bg), transparent 25%); border-bottom: 1px solid var(--fi-border-soft);">
+    <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="fi-mono font-bold text-sm" style="color: var(--fi-accent);">⬡</span>
+        <a href="/" class="text-sm font-semibold">Activist OS</a>
+        <span class="text-faint text-sm">/</span>
+        <span class="text-sm text-muted">Pre-kickoff checklist</span>
+      </div>
+      <span class="eyebrow">Jun 12–19 · Band of Agents Hackathon</span>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <p class="eyebrow mb-3">Goal</p>
+      <h1 class="text-3xl font-bold tracking-tight mb-3">
+        Pre-kickoff: skeleton ready to plug Band in.
+      </h1>
+      <p class="text-muted max-w-2xl leading-relaxed">
+        Activist OS inherits insult-ai's proven hackathon shape (api + web + fi-runner + fi-glass + deploy + smoke tests).
+        The only thing we wait on from kickoff is the <strong class="text-white">Band SDK/API drop</strong>.
+        Everything else is copy-and-adapt. When it arrives:
+        <code class="fi-mono text-sm" style="color: var(--fi-accent);">LocalTransport → BandTransport</code> — that's the only big change.
+      </p>
+    </div>
+
+    <!-- Progress summary -->
+    <div class="fi-glass p-5 mb-8" id="progress-card">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-semibold">Overall progress</span>
+        <span class="fi-mono text-sm text-muted" id="progress-label">3 / 10 done</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width: 30%"></div>
+      </div>
+      <div class="flex gap-4 mt-4 text-xs text-faint fi-mono">
+        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background: var(--fi-done)"></span>done</span>
+        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background: var(--fi-partial)"></span>partial</span>
+        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background: var(--fi-todo)"></span>todo</span>
+        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background: var(--fi-block)"></span>blocks Band</span>
+      </div>
+    </div>
+
+    <!-- ── PHASE 1: Pre-kickoff ─────────────────────────────────── -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="phase-badge phase-pre">Phase 1 — Pre-kickoff</span>
+        <span class="text-faint text-sm fi-mono">Before Jun 12 15:00 UTC</span>
+      </div>
+      <div class="fi-glass p-5 space-y-1">
+
+        <!-- 1. Landing -->
+        <div class="task done" data-weight="1">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Landing page deployable</p>
+            <p class="task-note">web/index.html — fi-glass tokens, 7 secciones, veto loop visible above fold.</p>
+          </div>
+        </div>
+
+        <!-- 2. Contracts -->
+        <div class="task partial" data-weight="0.6">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Shared contracts defined</p>
+            <p class="task-note">✅ evidence_brief · campaign_plan · safety_verdict · outreach_pack · task_board · campaign_packet<br>
+            ❌ Missing: UserConcern (input schema) · WorkflowRun · AgentHandoff · AuditEvent</p>
+          </div>
+        </div>
+
+        <!-- 3. FastAPI -->
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">FastAPI booting — <code class="fi-mono text-xs" style="color:var(--fi-evidence)">GET /health · POST /workflow/start · GET /workflow/{id}/events</code></p>
+            <p class="task-note">Port from insult-ai api/. Add SSE /events endpoint from day 1 (later visualizes Band handoffs).</p>
+          </div>
+        </div>
+
+        <!-- 4. LocalTransport -->
+        <div class="task blocked" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">LocalTransport interface — <code class="fi-mono text-xs" style="color:var(--fi-veto)">blocks Band integration</code></p>
+            <p class="task-note">Transport interface: publish / subscribe / send_handoff / get_context.<br>
+            LocalTransport = in-memory. BandTransport = slot waiting for SDK. Swap at kickoff, don't rewrite the product.</p>
+          </div>
+        </div>
+
+        <!-- 5. WorkflowRunner -->
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">WorkflowRunner — orchestrates the 6-agent chain</p>
+            <p class="task-note">api/app/runner/workflow_runner.py — deterministic, contract-validated. Port from insult-ai runner.</p>
+          </div>
+        </div>
+
+        <!-- 6. 6 stub agents -->
+        <div class="task partial" data-weight="0.5">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">6 stub agents with typed I/O</p>
+            <p class="task-note">✅ Folders + SPEC.md exist: evidence · campaign · safety · outreach · coordinator · reporter<br>
+            ❌ Missing: actual Python stubs that accept/return contracts (not SPEC.md — running code)</p>
+          </div>
+        </div>
+
+        <!-- 7. Safety veto loop -->
+        <div class="task blocked" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Safety veto loop running end-to-end — <code class="fi-mono text-xs" style="color:var(--fi-veto)">the money shot</code></p>
+            <p class="task-note">Campaign → Safety (veto) → Campaign (rewrite) → Safety (approve). On record in audit trail.<br>
+            This is the judging criterion #1 demo. Cannot be cut.</p>
+          </div>
+        </div>
+
+        <!-- 8. CampaignPacket -->
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">CampaignPacket assembled by Reporter</p>
+            <p class="task-note">Final output: evidence brief + campaign message + outreach copy + task plan + provenance + safety audit log.</p>
+          </div>
+        </div>
+
+        <!-- 9. SSE / event stream -->
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">SSE event stream <code class="fi-mono text-xs" style="color:var(--fi-evidence)">GET /workflow/{id}/events</code></p>
+            <p class="task-note">Server-sent events from day 1. The web demo and the judges read agent handoffs in real time from here.</p>
+          </div>
+        </div>
+
+        <!-- 10. Smoke test -->
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Smoke test green — <code class="fi-mono text-xs">make smoke</code></p>
+            <p class="task-note">Input: "Restaurant X claims 100% compostable packaging but local waste systems don't process it."<br>
+            Expected: EvidenceBrief → CampaignDraft → VETO → rewrite → approve → OutreachPlan → VolunteerTasks → CampaignPacket → audit trail.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PHASE 2: Kickoff (Band arrives) ───────────────────────── -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="phase-badge phase-kick">Phase 2 — Kickoff</span>
+        <span class="text-faint text-sm fi-mono">Jun 12 15:00 UTC — Band SDK drops</span>
+      </div>
+      <div class="fi-glass p-5 space-y-1">
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Read Band SDK docs + fill primitive table in <code class="fi-mono text-xs">band.md</code></p>
+            <p class="task-note">Agent identity · typed message exchange · request/response (veto loop) · HITL hook · coordination history.<br>
+            Rule: fill the table BEFORE writing transport code. No guessing the SDK shape.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Implement BandTransport — swap in for LocalTransport</p>
+            <p class="task-note">Contracts ride inside Band messages. Validate payload against schema before send and after receive.<br>
+            This is the only big change if LocalTransport is built correctly.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Veto loop visible in Band coordination history</p>
+            <p class="task-note">The judge must SEE the CAMPAIGN ⇄ SAFETY handoffs in Band's room history. Not a narrated claim.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PHASE 3: Demo web UI ───────────────────────────────────── -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="phase-badge phase-demo">Phase 3 — Demo UI</span>
+        <span class="text-faint text-sm fi-mono">Jun 13–15 · After API is solid</span>
+      </div>
+      <div class="fi-glass p-5 space-y-1">
+        <div class="task done" data-weight="1">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Landing page live</p>
+            <p class="task-note">web/index.html — done and verified.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Demo shell — 3-column layout</p>
+            <p class="task-note">Left: agent flow / timeline. Center: current agent messages (AgentConversationSurface). Right: campaign packet + audit trail.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">SafetyVetoCard visible in real time</p>
+            <p class="task-note">The veto rejection renders as a glass-box panel. Plan-before-act comes free from fi-glass/agent. This is the demo's money shot on screen.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">CampaignPacketPreview in the right column</p>
+            <p class="task-note">Provenance tiers visible: fetched_fulltext → news_search → company_source. Never a claim without its source attached.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PHASE 4: Deploy + submit ──────────────────────────────── -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="phase-badge phase-band">Phase 4 — Deploy &amp; submit</span>
+        <span class="text-faint text-sm fi-mono">Jun 17–18 · Submit Jun 19 early</span>
+      </div>
+      <div class="fi-glass p-5 space-y-1">
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Azure Container App running <code class="fi-mono text-xs">activist-os-api</code></p>
+            <p class="task-note">Port insult-ai CI/CD pattern. OIDC federated credential, GHCR image, non-root user. /health keyless for liveness probe.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Azure Static Web App running <code class="fi-mono text-xs">activist-os-web</code></p>
+            <p class="task-note">Next.js static export. Path-scoped workflow: web/** only. SWA is free tier, no containers needed.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Smoke test green on prod URL</p>
+            <p class="task-note">/health 200 · demo case runs end-to-end · veto loop on the record · CampaignPacket produced.</p>
+          </div>
+        </div>
+        <div class="task" data-weight="0">
+          <span class="task-dot"></span>
+          <div>
+            <p class="task-label">Video ≤4 min · README · submission form filled</p>
+            <p class="task-note">Show the veto rejection, not just the approval. Include Band coordination history on screen. Submit early on Jun 19.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── What NOT to build ────────────────────────────────────── -->
+    <section class="mb-10">
+      <div class="fi-glass p-5" style="border-color: color-mix(in srgb, var(--fi-veto), transparent 70%); background: color-mix(in srgb, var(--fi-veto), transparent 96%);">
+        <p class="eyebrow mb-3" style="color: var(--fi-veto);">Do not build (cuts the scope)</p>
+        <div class="grid sm:grid-cols-2 gap-2 fi-mono text-sm text-muted">
+          <span>✗ RAG / pgvector full setup</span>
+          <span>✗ Auth / saved chats</span>
+          <span>✗ Library / corpus upload</span>
+          <span>✗ Clinical / roast modes</span>
+          <span>✗ Multiple use cases</span>
+          <span>✗ GitHub Actions YAML before veto loop runs</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Architecture one-liner ───────────────────────────────── -->
+    <div class="text-center py-8 border-t" style="border-color: var(--fi-border-soft);">
+      <p class="fi-mono text-sm text-faint mb-2">Architectural rule (AURITY, Jun 12)</p>
+      <p class="text-white font-semibold text-lg">
+        "Activist OS should not depend on Band to exist.<br />
+        It should use Band to become <span style="color: var(--fi-accent);">visibly multi-agent</span>."
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t py-8" style="border-color: var(--fi-border-soft);">
+    <div class="max-w-4xl mx-auto px-6 flex items-center justify-between text-xs text-faint fi-mono">
+      <span>Activist OS · Free Intelligence</span>
+      <span>Band of Agents Hackathon · Jun 12–19 2026</span>
+    </div>
+  </footer>
+
+  <script>
+    // Click a task to toggle done (for manual tracking during session)
+    document.querySelectorAll('.task').forEach(task => {
+      task.addEventListener('click', () => {
+        if (task.classList.contains('done')) {
+          task.classList.remove('done');
+        } else if (task.classList.contains('partial')) {
+          task.classList.remove('partial');
+          task.classList.add('done');
+        } else if (task.classList.contains('blocked')) {
+          // blocked stays blocked — manual override
+          task.classList.remove('blocked');
+          task.classList.add('done');
+        } else {
+          task.classList.add('done');
+        }
+        updateProgress();
+      });
+    });
+
+    function updateProgress() {
+      const tasks = document.querySelectorAll('.task[data-weight]');
+      let done = 0, total = 0;
+      tasks.forEach(t => {
+        const w = parseFloat(t.dataset.weight) || 0;
+        if (t.classList.contains('done')) done += 1;
+        else if (t.classList.contains('partial')) done += 0.5;
+        total += 1;
+      });
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent =
+        Math.round(done) + ' / ' + total + ' done';
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>

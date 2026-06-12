@@ -42,19 +42,16 @@ Development — that track is for coding agents.
 Activist OS runs 6 agents through Band; the CAMPAIGN ⇄ SAFETY veto loop is
 the clearest "real coordination, not sequential prompts" proof. See `band.md`.
 
-## Judging criteria — ⚠️ NOT YET PUBLISHED for this event
+## Judging criteria — ✅ CONFIRMED (fetched 2026-06-11)
 
-lablab's standard rubric (from previous events, treat as the working
-hypothesis until kickoff confirms):
+Source: verbatim from hackathon page. No re-verification needed at kickoff.
 
-| # | Criterion | Map to product surface |
-|---|---|---|
-| 1 | Application of Technology | Band coordination is real: typed handoffs, veto loop, audit trail — not prompt chaining |
-| 2 | Presentation | live demo URL + ≤4 min video with the veto money shot (`docs/DEMO_SCRIPT.md`) |
-| 3 | Business Value | ops layer for mission-driven orgs: campaign packet = hours of specialist work, governed |
-| 4 | Originality | safety-gated advocacy + tiered provenance (inherited from Insult AI, extended to coordination) |
-
-Re-verify at kickoff and update this table with verbatim definitions.
+| # | Criterion | Verbatim definition | Map to product surface |
+|---|---|---|---|
+| 1 | Application of Technology | "How effectively does the solution use Band as the coordination layer between multiple specialized agents? Strong submissions should show agents collaborating through Band with clear task handoffs, shared context, role specialization, task state, and coordination." | The veto loop is the money shot: CAMPAIGN→SAFETY handoff, Safety's verdict with `blocked_items` back to CAMPAIGN — all visible in Band room history |
+| 2 | Presentation | "How clearly does the team explain and demonstrate the solution? Strong submissions should make the multi-agent workflow easy to understand, including the problem, agent roles, Band's role in coordination, the flow of context and handoffs, and the value created." | Live demo URL + ≤4 min video. Show the veto rejection, not just the approval. |
+| 3 | Business Value | "How clearly does the project solve a real enterprise workflow problem? Strong submissions should address a meaningful business process, reduce manual coordination, improve decision-making, accelerate execution, or make a complex workflow easier to operate." | "The missing ops layer for orgs with no staff" — campaign packet = hours of specialist work, governed and auditable |
+| 4 | Originality | "How creatively does the project use multi-agent collaboration? Strong submissions should go beyond a simple chatbot, single-agent assistant, or linear automation, and demonstrate what becomes possible when agents can discover each other, coordinate, divide work, review outputs, escalate issues, or collaborate across frameworks." | Safety-gated advocacy with tiered provenance + veto loop is architecturally novel — not a linear pipeline |
 
 ## Priorities when time runs short (in order)
 
