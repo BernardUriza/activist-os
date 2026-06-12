@@ -350,18 +350,18 @@
         <span class="text-faint text-sm fi-mono">Jun 17–18 · Submit Jun 19 early</span>
       </div>
       <div class="fi-glass p-5 space-y-1">
-        <div class="task partial" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Azure Container App running <code class="fi-mono text-xs">activist-os-api</code></p>
-            <p class="task-note">Preflight DONE: API CI green on GitHub (ruff + pytest + path guard), absolute-path blocker purged, env manifest in <code class="fi-mono text-xs">docs/deploy/aos-preflight.md</code> (domain: aos.bernarduriza.com). Remaining: GHCR image, OIDC credential, Container App + SWA.</p>
+            <p class="task-note">LIVE — activist-os-api.greenbay-d46a7a63.eastus.azurecontainerapps.io · TRANSPORT=band, agent config via secret, /health/full says BandTransport. GHCR image built by Actions. Azure smoke run completed the full Band workflow (8 handoffs, veto loop, room 54f69620).</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Azure Static Web App running <code class="fi-mono text-xs">activist-os-web</code></p>
-            <p class="task-note">Next.js static export. Path-scoped workflow: web/** only. SWA is free tier, no containers needed.</p>
+            <p class="task-note">LIVE — proud-stone-023fae70f.7.azurestaticapps.net · Next.js static export from free-intelligence monorepo, NEXT_PUBLIC_ACTIVIST_API_URL baked to the Container App. Public end-to-end smoke: STREAMING → LIVE API, 8 handoffs, LIVE BAND. Pending: CNAME aos.bernarduriza.com at Namecheap (Bernard).</p>
           </div>
         </div>
         <div class="task" data-weight="0">

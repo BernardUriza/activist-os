@@ -1,7 +1,20 @@
 # AOS deploy preflight — environment & domain manifest
 
-Status: **preflight only.** No Azure resources created, no DNS configured.
+Status: **DEPLOYED (Jun 12).** DNS pending — the only remaining step.
 The deploy topology mirrors insult-ai (see `.claude/rules/cicd.md`).
+
+## Live URLs
+
+| Surface | URL |
+|---|---|
+| Web (SWA) | https://proud-stone-023fae70f.7.azurestaticapps.net |
+| API (Container Apps) | https://activist-os-api.greenbay-d46a7a63.eastus.azurecontainerapps.io |
+| Resource group | `activist-os-rg` (eastus) · env `activist-os-env` |
+
+DNS to finish: at Namecheap (registrar-servers DNS, same zone as
+`iai.bernarduriza.com`), add `CNAME aos → proud-stone-023fae70f.7.azurestaticapps.net`,
+then run `az staticwebapp hostname set --name activist-os-web
+--resource-group activist-os-rg --hostname aos.bernarduriza.com`.
 
 ## Frontend (web)
 
