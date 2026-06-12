@@ -275,27 +275,25 @@
         <span class="text-faint text-sm fi-mono">Jun 12 15:00 UTC — Band SDK drops</span>
       </div>
       <div class="fi-glass p-5 space-y-1">
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Read Band SDK docs + fill primitive table in <code class="fi-mono text-xs">band.md</code></p>
-            <p class="task-note">Agent identity · typed message exchange · request/response (veto loop) · HITL hook · coordination history.<br>
-            Rule: fill the table BEFORE writing transport code. No guessing the SDK shape.</p>
+            <p class="task-note">Table FILLED from the Band Hacker Guide (Jun 12): Agent registration · chat room + @mentions · room-as-veto-channel · <code class="fi-mono text-xs">thenvoi_add_participant</code> HITL · built-in observability. 6 agents registered on app.band.ai.</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Implement BandTransport — swap in for LocalTransport</p>
-            <p class="task-note">Contracts ride inside Band messages. Validate payload against schema before send and after receive.<br>
-            This is the only big change if LocalTransport is built correctly.</p>
+            <p class="task-note">DONE — real Band smoke green (2.97s): one room per run, handoffs sent AS the from_agent with @mentions, <code class="fi-mono text-xs">TRANSPORT=local|band</code> switch, Reporter as virtual agent (5-seat cap workaround via <code class="fi-mono text-xs">BAND_VIRTUAL_AGENTS</code>), contract smoke 14/14 + real smoke opt-in (<code class="fi-mono text-xs">RUN_BAND_SMOKE=1</code>).</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task partial" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Veto loop visible in Band coordination history</p>
-            <p class="task-note">The judge must SEE the CAMPAIGN ⇄ SAFETY handoffs in Band's room history. Not a narrated claim.</p>
+            <p class="task-note">Real smoke run posted the full exchange to an app.band.ai room: Campaign @Safety SAFETY_REQUEST → Safety @Campaign SAFETY_VETO → revised request → SAFETY_APPROVED, each sent AS its agent. Verify visually in the Band UI before the demo.</p>
           </div>
         </div>
       </div>
@@ -315,25 +313,25 @@
             <p class="task-note">web/index.html — done and verified.</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">Demo shell — 3-column layout</p>
-            <p class="task-note">Left: agent flow / timeline. Center: current agent messages (AgentConversationSurface). Right: campaign packet + audit trail.</p>
+            <p class="task-note">DONE — <code class="fi-mono text-xs">web/demo.html</code> (fi-glass tokens): left coordination history, center conversation surface with @mentions + Band ids, right safety gate + packet. Renders live from <code class="fi-mono text-xs">GET /workflow/{run_id}/history</code> with reproducible mock fallback.</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task partial" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">SafetyVetoCard visible in real time</p>
-            <p class="task-note">The veto rejection renders as a glass-box panel. Plan-before-act comes free from fi-glass/agent. This is the demo's money shot on screen.</p>
+            <p class="task-note">Veto + approved cards render in the right column (money shot visible without scroll). Still static copy — wire to real SafetyVerdict data + live SSE streaming next.</p>
           </div>
         </div>
-        <div class="task" data-weight="0">
+        <div class="task partial" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">CampaignPacketPreview in the right column</p>
-            <p class="task-note">Provenance tiers visible: fetched_fulltext → news_search → company_source. Never a claim without its source attached.</p>
+            <p class="task-note">Packet panel renders in the right column. Provenance tiers (fetched_fulltext → news_search → company_source) not yet pulled from the real EvidenceBrief.</p>
           </div>
         </div>
       </div>
