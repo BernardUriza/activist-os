@@ -324,14 +324,14 @@
           <span class="task-dot"></span>
           <div>
             <p class="task-label">SafetyVetoCard visible in real time</p>
-            <p class="task-note">Veto + approved cards render in the right column (money shot visible without scroll). Still static copy — wire to real SafetyVerdict data + live SSE streaming next.</p>
+            <p class="task-note">Cards now render from <code class="fi-mono text-xs">response.artifacts.safety_review</code> — real draft, veto reason (blocked_items) and rewrite from handoff payloads, LIVE API / MOCK FALLBACK badge in the header. Remaining: live SSE streaming while a run executes.</p>
           </div>
         </div>
-        <div class="task partial" data-weight="0">
+        <div class="task done" data-weight="0">
           <span class="task-dot"></span>
           <div>
             <p class="task-label">CampaignPacketPreview in the right column</p>
-            <p class="task-note">Packet panel renders in the right column. Provenance tiers (fetched_fulltext → news_search → company_source) not yet pulled from the real EvidenceBrief.</p>
+            <p class="task-note">DONE — packet + evidence cards render from <code class="fi-mono text-xs">artifacts.campaign_packet</code> / <code class="fi-mono text-xs">artifacts.evidence_brief</code>: real claim/source/asset/task counts derived from handoff payloads. Per-tier provenance breakdown is a polish item.</p>
           </div>
         </div>
       </div>

@@ -126,11 +126,28 @@
   <header class="max-w-[1500px] mx-auto px-5 pt-6 pb-4 flex flex-wrap items-center gap-3">
     <h1 class="text-lg font-bold tracking-tight">⬡ Activist OS — Coordination Demo</h1>
     <span id="transport-badge" class="fi-badge fi-badge--local">LOCAL</span>
+    <span id="source-badge" class="fi-badge fi-badge--provenance">MOCK FALLBACK</span>
     <span class="fi-badge fi-badge--provenance">PROVENANCE</span>
     <span id="virtual-badge" class="fi-badge fi-badge--virtual hidden">VIRTUAL REPORTER</span>
     <span id="run-label" class="fi-mono text-xs" style="color: var(--fi-faint)"></span>
     <span id="data-source" class="fi-mono text-xs ml-auto" style="color: var(--fi-faint)"></span>
   </header>
+
+  <section id="start-panel" class="max-w-[1500px] mx-auto px-5 pb-4 hidden">
+    <div class="fi-glass-panel p-4 flex flex-wrap items-center gap-3">
+      <label class="panel-title" for="concern-input">Describe a civic concern</label>
+      <input id="concern-input" type="text"
+        value="Cafe Verde claims its packaging is compostable, but the local waste facility does not accept compostable packaging."
+        class="flex-1 min-w-[280px] bg-transparent rounded-lg px-3 py-2 text-sm outline-none"
+        style="border: 1px solid var(--fi-border); color: var(--fi-text);" />
+      <button id="run-btn"
+        class="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide cursor-pointer disabled:opacity-50"
+        style="font-family: var(--fi-font-mono); color: var(--fi-accent); border: 1px solid color-mix(in srgb, var(--fi-accent), transparent 60%); background: color-mix(in srgb, var(--fi-accent), transparent 90%);">
+        Run workflow
+      </button>
+      <span id="start-status" class="fi-mono text-xs" style="color: var(--fi-faint)"></span>
+    </div>
+  </section>
 
   <main class="max-w-[1500px] mx-auto px-5 pb-10 grid grid-cols-1 lg:grid-cols-[290px_minmax(0,1fr)_360px] gap-4 items-start">
 
@@ -152,43 +169,44 @@
       <div id="conversation" class="space-y-2.5"></div>
     </section>
 
-    <!-- RIGHT: safety + packet -->
+    <!-- RIGHT: evidence + safety + packet — rendered from response.artifacts -->
     <section class="space-y-4">
+      <div class="fi-glass-panel p-4 space-y-2">
+        <p class="panel-title">Evidence Brief</p>
+        <p id="evidence-title" class="text-sm font-semibold"></p>
+        <p id="evidence-summary" class="text-xs" style="color: var(--fi-muted)"></p>
+      </div>
+
       <div class="fi-glass-panel p-4 space-y-3">
         <p class="panel-title">Safety Gate</p>
         <div id="veto-card" class="msg msg--veto space-y-1.5">
           <div class="flex items-center gap-2">
             <span class="fi-badge fi-badge--vetoed">VETO</span>
-            <span class="fi-mono text-[0.65rem]" style="color: var(--fi-faint)">defamation · unsupported claim</span>
           </div>
           <p class="text-sm" style="color: var(--fi-muted)">Campaign draft:</p>
-          <p class="text-sm italic">"Restaurant X is lying to customers."</p>
-          <p class="text-sm" style="color: var(--fi-veto)">Safety: unsupported accusation against a named target — blocked.</p>
+          <p id="draft-text" class="text-sm italic"></p>
+          <p id="veto-reason" class="text-sm" style="color: var(--fi-veto)"></p>
         </div>
         <div id="approved-card" class="msg msg--approved space-y-1.5">
           <div class="flex items-center gap-2">
             <span class="fi-badge fi-badge--approved">APPROVED</span>
-            <span class="fi-mono text-[0.65rem]" style="color: var(--fi-faint)">revision 2 · all 5 checks pass</span>
           </div>
           <p class="text-sm" style="color: var(--fi-muted)">Rewritten:</p>
-          <p class="text-sm italic">"Available evidence does not support the restaurant's compostable claim under local disposal conditions."</p>
+          <p id="rewritten-text" class="text-sm italic"></p>
         </div>
       </div>
 
       <div class="fi-glass-panel p-4 space-y-2">
         <p class="panel-title">Campaign Packet</p>
-        <ul id="packet-list" class="text-sm space-y-1.5" style="color: var(--fi-muted)">
-          <li>📋 Evidence brief — claims with provenance tiers</li>
-          <li>📢 Outreach pack — community-language assets</li>
-          <li>🗂 Task board — volunteer actions, lawful + nonviolent</li>
-          <li>🧾 Safety audit log — vetoes included, not just approvals</li>
-        </ul>
+        <p id="packet-title" class="text-sm font-semibold"></p>
+        <p id="packet-summary" class="text-xs" style="color: var(--fi-muted)"></p>
+        <ul id="packet-list" class="text-sm space-y-1.5" style="color: var(--fi-muted)"></ul>
         <p class="text-xs pt-1" style="color: var(--fi-faint)">
           Humans hold the send button — the system assembles, it never publishes.
         </p>
       </div>
 
-      <div class="fi-glass-panel p-4 space-y-1">
+      <div id="virtual-panel" class="fi-glass-panel p-4 space-y-1">
         <p class="panel-title">Why a virtual reporter?</p>
         <p class="text-xs" style="color: var(--fi-muted)">
           Reporter is virtualized to respect Band room participant limits while
@@ -218,6 +236,31 @@
         { index: 6, from_agent: "coordinator", to_agent: "reporter",    type: "tasks_ready",       virtual: true,  band_room_id: null, band_message_id: null },
         { index: 7, from_agent: "reporter",    to_agent: "system",      type: "packet_ready",      virtual: true,  band_room_id: null, band_message_id: null },
       ],
+      // MOCK artifacts — hand-written demo copy lives ONLY here, behind the
+      // MOCK FALLBACK badge. The live API derives artifacts from real payloads.
+      artifacts: {
+        evidence_brief: {
+          title: "Restaurant X claims 100% compostable packaging, but local waste systems do not process it.",
+          summary: "3 claims verified — 2 usable in campaign, 4 sources with provenance tiers attached.",
+          claims_count: 3,
+          sources_count: 4,
+        },
+        safety_review: {
+          draft_text: "Restaurant X is lying to its customers about eco-friendly packaging.",
+          veto_reason: "defamation: unsupported accusation against a named target — blocked.",
+          rewritten_text: "Available evidence does not support the restaurant's 'compostable' claim under local disposal conditions.",
+          approved: true,
+          veto_observed: true,
+        },
+        campaign_packet: {
+          title: "Campaign packet — compostable packaging claim",
+          summary: "Assembled from 8 coordinated handoffs; safety audit log included (approved).",
+          outreach_assets_count: 3,
+          volunteer_tasks_count: 4,
+          provenance_items_count: 4,
+          reporter_virtual: true,
+        },
+      },
     };
 
     const HANDOFF_BLURBS = {
@@ -239,9 +282,58 @@
       return "hist-step";
     }
 
-    function render(history, sourceLabel) {
+    function renderArtifacts(artifacts) {
+      const evidence = artifacts.evidence_brief || {};
+      const safety = artifacts.safety_review || {};
+      const packet = artifacts.campaign_packet || {};
+
+      document.getElementById("evidence-title").textContent = evidence.title || "";
+      document.getElementById("evidence-summary").textContent = evidence.summary || "";
+
+      document.getElementById("draft-text").textContent = safety.draft_text ? `"${safety.draft_text}"` : "";
+      document.getElementById("veto-reason").textContent = safety.veto_reason || "";
+      document.getElementById("rewritten-text").textContent = safety.rewritten_text ? `"${safety.rewritten_text}"` : "";
+      document.getElementById("veto-card").classList.toggle("hidden", !safety.veto_observed);
+      document.getElementById("approved-card").classList.toggle("hidden", !safety.approved);
+
+      document.getElementById("packet-title").textContent = packet.title || "";
+      document.getElementById("packet-summary").textContent = packet.summary || "";
+      const list = document.getElementById("packet-list");
+      list.innerHTML = "";
+      const items = [
+        `📋 Evidence brief — ${evidence.claims_count ?? 0} claims, ${evidence.sources_count ?? 0} sources with provenance tiers`,
+        `📢 Outreach pack — ${packet.outreach_assets_count ?? 0} community-language assets`,
+        `🗂 Task board — ${packet.volunteer_tasks_count ?? 0} volunteer actions, lawful + nonviolent`,
+        `🧾 Safety audit log — ${packet.provenance_items_count ?? 0} provenance items; vetoes included, not just approvals`,
+      ];
+      for (const text of items) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      }
+      document.getElementById("virtual-panel").classList.toggle("hidden", !packet.reporter_virtual);
+    }
+
+    function setSourceBadge(state) {
+      const cls = {
+        "LIVE API":      "fi-badge fi-badge--approved",
+        "MOCK FALLBACK": "fi-badge fi-badge--vetoed",
+        "STARTING":      "fi-badge fi-badge--provenance",
+        "ERROR":         "fi-badge fi-badge--vetoed",
+        "IDLE":          "fi-badge fi-badge--local",
+      };
+      const sb = document.getElementById("source-badge");
+      sb.textContent = state;
+      sb.className = cls[state] || "fi-badge fi-badge--local";
+    }
+
+    function render(history, sourceLabel, isLive) {
       document.getElementById("data-source").textContent = sourceLabel;
       document.getElementById("run-label").textContent = `run ${history.run_id}`;
+
+      setSourceBadge(isLive ? "LIVE API" : "MOCK FALLBACK");
+
+      renderArtifacts(history.artifacts || {});
 
       const tb = document.getElementById("transport-badge");
       if (history.transport === "band") {
@@ -300,21 +392,71 @@
       }
     }
 
+    const apiBase = () =>
+      new URLSearchParams(location.search).get("api") || "http://localhost:8000";
+
+    async function fetchHistory(api, runId) {
+      const res = await fetch(`${api}/workflow/${runId}/history`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    async function startWorkflow() {
+      const btn = document.getElementById("run-btn");
+      const status = document.getElementById("start-status");
+      const concern = document.getElementById("concern-input").value.trim();
+      const api = apiBase();
+      btn.disabled = true;
+      setSourceBadge("STARTING");
+      status.textContent = "Starting workflow…";
+      try {
+        const res = await fetch(`${api}/workflow/start`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ concern }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { run_id } = await res.json();
+        const url = new URL(location.href);
+        url.searchParams.set("run_id", run_id);
+        history.replaceState(null, "", url);
+        // Stub agents finish in milliseconds; poll briefly until the run settles.
+        let data = null;
+        for (let i = 0; i < 16; i++) {
+          try {
+            data = await fetchHistory(api, run_id);
+            if (["completed", "blocked", "error"].includes(data.status)) break;
+          } catch { /* run may not be registered yet */ }
+          await new Promise(r => setTimeout(r, 500));
+        }
+        if (!data) throw new Error("history never became available");
+        render(data, `live · ${api}`, true);
+        status.textContent = "";
+      } catch (err) {
+        console.error("workflow start failed:", err);
+        setSourceBadge("ERROR");
+        status.textContent = "Could not start live workflow. Check API URL and backend logs.";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     async function load() {
-      const params = new URLSearchParams(location.search);
-      const runId = params.get("run_id");
-      const api = params.get("api") || "http://localhost:8000";
+      const runId = new URLSearchParams(location.search).get("run_id");
+      const api = apiBase();
       if (runId) {
         try {
-          const res = await fetch(`${api}/workflow/${runId}/history`);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          render(await res.json(), `live · ${api}`);
+          render(await fetchHistory(api, runId), `live · ${api}`, true);
           return;
         } catch (err) {
           console.warn("history fetch failed, falling back to mock:", err);
         }
+      } else {
+        document.getElementById("start-panel").classList.remove("hidden");
+        document.getElementById("run-btn").addEventListener("click", startWorkflow);
+        document.getElementById("start-status").textContent = "IDLE — mock shown until a workflow runs.";
       }
-      render(MOCK_HISTORY, "reproducible mock (pass ?run_id=… for a live run)");
+      render(MOCK_HISTORY, "reproducible mock (pass ?run_id=… for a live run)", false);
     }
     load();
   </script>
