@@ -203,12 +203,13 @@
           </div>
         </div>
 
-        <!-- 4. LocalTransport -->
-        <div class="task done" data-weight="1">
+        <!-- 4. LocalTransport + BandTransport -->
+        <div class="task partial" data-weight="0.7">
           <span class="task-dot"></span>
           <div>
-            <p class="task-label">LocalTransport interface — BandTransport slot ready</p>
-            <p class="task-note">api/app/runner/transports/ — base.py + local_transport.py (in-memory) + band_transport.py (stub). Swap = one import change.</p>
+            <p class="task-label">Band agents — code done, needs agent registration</p>
+            <p class="task-note">band-sdk[anthropic] instalado. 6 band_agents/*.py + orchestrator.py + run_band_agents.sh listos.<br>
+            Pendiente: registrar 6 agentes en app.band.ai/agents → copiar UUIDs a agent_config.yaml → redimir BANDHACK26.</p>
           </div>
         </div>
 
