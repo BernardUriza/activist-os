@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BernardUriza/activist-os/contracts/user_concern.schema.json",
+  "title": "UserConcern",
+  "description": "The raw community concern submitted by the user. Entry point of the workflow.",
+  "type": "object",
+  "required": [
+    "id",
+    "text",
+    "submitted_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this workflow run (UUID)"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 10,
+      "description": "The community concern as written by the user. May be in any language — the OUTREACH agent mirrors the language of this field for campaign copy."
+    },
+    "location": {
+      "type": "string",
+      "description": "Optional: city, region, or country the concern relates to"
+    },
+    "category": {
+      "enum": [
+        "greenwashing",
+        "environmental",
+        "animal_welfare",
+        "labor",
+        "consumer_rights",
+        "other"
+      ],
+      "description": "Broad category to guide the Evidence agent's search strategy"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "Optional opaque user identifier — never a real name unless the user provides it"
+    }
+  }
+}
