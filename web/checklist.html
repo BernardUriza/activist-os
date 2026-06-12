@@ -259,7 +259,7 @@
           <span class="task-dot"></span>
           <div>
             <p class="task-label">SSE event stream <code class="fi-mono text-xs" style="color:var(--fi-evidence)">GET /workflow/{id}/events</code></p>
-            <p class="task-note">StreamingResponse in main.py — replays existing events + streams new ones until run completes.</p>
+            <p class="task-note">StreamingResponse in main.py — replays existing events + streams new ones until run completes. HTTP contract covered by <code class="fi-mono text-xs">tests/test_events_endpoint.py</code> (replay equality, start→stream flow, 404).</p>
           </div>
         </div>
 
