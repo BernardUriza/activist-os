@@ -85,3 +85,31 @@ forbids.
 How to apply: when adding a panel, add the field to `_build_artifacts()`
 in `api/app/main.py` first, then render `data.artifacts.*` — if the value
 isn't derivable from a payload, the panel doesn't ship.
+
+## No emojis in system UI — icons come from the fi-glass icon system
+
+Author-controlled UI never uses emoji characters as icons (no 📋/📢/🧾
+bullets, no emoji badges). fi-glass already ships the icon layer this
+product consumes:
+
+| Export (`fi-glass/src/agent/icons.ts`) | Role |
+|---|---|
+| `AgentIconSet` | the contract — icons keyed by visual category (plan, warning, bot, sources, …) |
+| `defaultAgentIcons` | lucide-backed defaults |
+| `resolveIcons(overrides?)` | deep-merge so the consumer swaps icons without forking |
+| `toolIcon(icons, name)` | classifies tool names → search/scrape/browser/rag/bash/… |
+
+`StateIcons` (in `fi-glass/src/voice/recording`) covers voice/recording
+states the same way. The point is framework-shaped and already upstream:
+fi-glass components never hardcode the icon language; the consumer
+overrides via `resolveIcons()`.
+
+How to apply:
+
+1. New UI element needs an icon? Use the fi-glass set (lucide via
+   `AgentIconSet`) or a token-colored geometric marker (the `▪` pattern
+   the landing already uses) — never an emoji.
+2. Found an emoji in a file you're editing? Replace it in the same PR
+   (boy-scout rule, same as `language.md`).
+3. A missing icon category gets added upstream in fi-glass `AgentIconSet`,
+   then consumed here — thin-consumer doctrine, not a local hardcode.
