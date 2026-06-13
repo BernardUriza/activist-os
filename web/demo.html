@@ -316,15 +316,23 @@
       document.getElementById("packet-summary").textContent = packet.summary || "";
       const list = document.getElementById("packet-list");
       list.innerHTML = "";
+      // Token-colored markers, not emojis — ui.md icon rule.
       const items = [
-        `📋 Evidence brief — ${evidence.claims_count ?? 0} claims, ${evidence.sources_count ?? 0} sources with provenance tiers`,
-        `📢 Outreach pack — ${packet.outreach_assets_count ?? 0} community-language assets`,
-        `🗂 Task board — ${packet.volunteer_tasks_count ?? 0} volunteer actions, lawful + nonviolent`,
-        `🧾 Safety audit log — ${packet.provenance_items_count ?? 0} provenance items; vetoes included, not just approvals`,
+        ["var(--fi-evidence)", `Evidence brief — ${evidence.claims_count ?? 0} claims, ${evidence.sources_count ?? 0} sources with provenance tiers`],
+        ["var(--fi-accent)", `Outreach pack — ${packet.outreach_assets_count ?? 0} community-language assets`],
+        ["var(--fi-accent)", `Task board — ${packet.volunteer_tasks_count ?? 0} volunteer actions, lawful + nonviolent`],
+        ["var(--fi-approved)", `Safety audit log — ${packet.provenance_items_count ?? 0} provenance items; vetoes included, not just approvals`],
       ];
-      for (const text of items) {
+      for (const [color, text] of items) {
         const li = document.createElement("li");
-        li.textContent = text;
+        li.style.display = "flex";
+        li.style.gap = ".5rem";
+        const dot = document.createElement("span");
+        dot.style.color = color;
+        dot.textContent = "▪";
+        const span = document.createElement("span");
+        span.textContent = text;
+        li.append(dot, span);
         list.appendChild(li);
       }
       document.getElementById("virtual-panel").classList.toggle("hidden", !packet.reporter_virtual);
