@@ -113,3 +113,23 @@ How to apply:
    (boy-scout rule, same as `language.md`).
 3. A missing icon category gets added upstream in fi-glass `AgentIconSet`,
    then consumed here — thin-consumer doctrine, not a local hardcode.
+
+## Single UI source of truth — the Next app; static HTML is frozen
+
+The Next.js app at `free-intelligence/apps/activist-os/web` is the ONLY
+product UI source of truth. The static HTML under `activist-os/web/`
+(index/demo/checklist.html) is read-only legacy kept as migration/archive
+reference until post-hackathon archival.
+
+No new UI feature, polish, branding, state logic, SSE behavior, or demo
+copy may land in the static HTML. Any UI change outside the Next app is a
+source-of-truth violation — this is the hard constraint that was missing
+when the static shell was born "for simplicity" and the product spent days
+as two parallel apps paying every feature twice.
+
+How to apply:
+
+1. UI work of any kind → `free-intelligence/apps/activist-os/web`. Always.
+2. Something valuable spotted in the static shell? Port it to the Next app
+   and leave the static file untouched.
+3. Post-hackathon: `web/*.html` moves to `archive/legacy-static-web/`.
