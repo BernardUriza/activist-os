@@ -1,74 +1,62 @@
-# Activist OS
+# python-bot — fullstack fi template
 
-**A multi-agent workflow for safe, evidence-backed civic advocacy.**
+The canonical clean template for a new fullstack agent app. Clone it, fill the
+seam, and ship. It carries the **full shipped stack with NO business logic**:
 
-> Band coordinates the agents.
-> FI preserves memory and provenance.
-> Safety gates every public action.
+- **`api/`** — FastAPI + [fi_runner](https://github.com/BernardUriza/free-intelligence)
+  agent (Claude / Codex backends), longitudinal `ConversationStore` memory,
+  optional RAG, anti-drift guards, and a `/chat/stream` SSE endpoint with live
+  chain-of-thought.
+- **`web/`** — Next.js 16 (static export) + React 19 + Tailwind v4. A streaming
+  chat front that renders the agent's plan → tool calls → token stream → result.
+- **`.github/workflows/`** — Azure deploy backbone: Container Apps (OIDC + GHCR)
+  for the API, Static Web Apps for the front. "What's on `main` IS what's live."
+- **`infra/`** — local Postgres + pgvector for RAG dev (optional).
 
-Built for the [Band of Agents Hackathon](https://lablab.ai/ai-hackathons/band-of-agents-hackathon) (lablab.ai · June 12–19, 2026) · Track: **Regulated & High-Stakes Workflows** · Team: **Free Intelligence**
+> Memory and the agent are **fi-concentrated by doctrine**: no hand-rolled LLM
+> client, no bespoke SQLite memory. Everything routes through `fi_runner` /
+> `fi-core`. If you find yourself reimplementing what `fi` already ships, stop.
 
-## What it does
+## The seam (what a new project fills)
 
-Activist OS turns a community concern into an **evidence-backed, safety-reviewed campaign packet**: verified claims, campaign strategy, outreach copy, volunteer tasks, and a full provenance report.
+Everything else is infrastructure you shouldn't need to touch. Three edits:
 
-Initial use case: vegan and ecological community campaigns — greenwashing detection and local action planning.
+1. **Persona** — `api/app/personas/assistant.md` (content, not code).
+2. **MCP servers** — `_MCP_SERVERS` in `api/app/runner.py` (empty by default).
+   Add the npm CLI for each to `api/Dockerfile`.
+3. **Branding** — `web/lib/site.ts` + the `app-*` tokens in
+   `web/app/globals.css` (six colors, one edit point).
 
-Civic advocacy is a genuinely high-stakes workflow. A public accusation has consequences: defamation liability, doxxing risk, harassment dynamics, reputational damage to the organizations involved. Most activist groups have no technical staff and no review process — they run on burnout and vibes. Activist OS is the missing operations layer: every public action passes through evidence verification and a safety gate before it exists.
+## Run it locally (tracer bullet)
 
-The system is **legal-risk-aware by design**: it blocks unsupported accusations, doxxing, harassment, and unsafe escalation before anything is published.
+```bash
+# API — conda-native (fi-core/fi-runner are NOT on PyPI)
+cd api
+mamba env create -f environment.yml && conda activate app
+export CLAUDE_CODE_OAUTH_TOKEN="$(claude setup-token)"   # or set APP_BACKEND=codex
+uvicorn app.app:app --reload --port 8080
+curl localhost:8080/health        # → {"ok": true, ...}
 
-## How the agents collaborate
-
-```
-[Community concern]
-       │
-       ▼
- 1. EVIDENCE agent ──(evidence_brief)──► 2. CAMPAIGN agent
-                                                │
-                                        (campaign_plan)
-                                                ▼
-                                         3. SAFETY agent ──(safety_verdict)──┐
-                                                │ approved                   │ blocked → revise
-                                                ▼                            ▼
- 4. OUTREACH agent (emails / posts / flyers)            back to CAMPAIGN agent
-       │
-       ▼
- 5. COORDINATOR agent (volunteer task board)
-       │
-       ▼
- 6. REPORTER agent → campaign_packet (everything + provenance + safety audit log)
-```
-
-Six specialized agents collaborate through **Band** — exchanging structured context (JSON Schema contracts), delegating work, and enforcing review gates. This is real agent-to-agent coordination across planning, execution, review and handoff — not a pipeline of sequential prompts.
-
-## Architecture principles
-
-1. **Contracts are the source of truth.** Every inter-agent message validates against a JSON Schema in [`contracts/`](contracts/). No free-form handoffs.
-2. **Provenance is tiered.** Every claim carries its sources, tagged by how they were read: `fetched_fulltext` > `news_search` > `company_source`. A judge can see what was read versus glimpsed.
-3. **Safety is a gate, not a filter.** The SAFETY agent has veto power. Nothing reaches OUTREACH without an `approved` verdict, and every veto is logged in the audit trail.
-4. **Humans stay in the loop.** The output is a campaign *packet* for humans to execute — the system never publishes on its own.
-
-## Status
-
-🚧 **Pre-hackathon scaffold** (architecture, contracts, agent specs, demo script — prepared before kickoff, as the hackathon guidelines allow).
-
-The **Band/Codeband integration** — live agent-to-agent coordination, context exchange, and handoffs — is built during the event (June 12–19). Progress will be visible in the commit history.
-
-## Repository layout
-
-```
-contracts/    JSON Schema contracts for every inter-agent message (the SSOT)
-agents/       One spec per agent: role, inputs, outputs, guardrails
-docs/         Architecture deep-dive and demo script
+# Web — in another shell
+cd web
+npm install
+NEXT_PUBLIC_API_URL=http://localhost:8080 npm run dev   # → http://localhost:3000
 ```
 
-## Lineage
+## Deploy (Azure)
 
-Activist OS builds on the engine proven by [Insult AI](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon/insult-ai/insult-ai) (Bright Data Web Data UNLOCKED hackathon): adversarial reasoning over live web data, tiered provenance receipts, plan-before-act transparency, and clinical guardrails.
+Both workflows trigger on push to `main` touching their half. They expect:
 
-**Insult AI cross-examined claims. Activist OS coordinates evidence-backed action.**
+| Where | Name | Kind |
+|---|---|---|
+| API | `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` | variables (OIDC) |
+| API | `AZURE_CONTAINER_APP_NAME`, `AZURE_RESOURCE_GROUP` | variables |
+| Web | `NEXT_PUBLIC_API_URL` | variable (inlined at build) |
+| Web | `NEXT_PUBLIC_API_KEY`, `AZURE_STATIC_WEB_APPS_API_TOKEN` | secrets |
+| API | `CLAUDE_CODE_OAUTH_TOKEN`, `APP_API_KEY`, `CORS_ALLOW_ORIGINS` | Container App env (set out-of-band) |
 
-## License
+The OIDC federated credential subject is `repo:<owner>/<repo>:ref:refs/heads/main`.
+The first GHCR image push lands `private` — flip the `<repo>/api` package to
+`public` once so Container Apps can pull it.
 
-MIT
+See `.env.example` for the full env surface.

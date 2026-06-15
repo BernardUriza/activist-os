@@ -1,64 +1,31 @@
-# Architecture — contracts are the law, Band is the road
+# Architecture — contracts first, classify before copy
 
-Deep-dive lives in `docs/ARCHITECTURE.md`. This rule is the doctrine that
-governs every implementation decision during the build week.
+**Behavior is ported as CONTRACTS first, implementation second.** The order for
+this whole build (coagent, 2026-06-14):
 
-## The three-layer split
+```
+rules → contracts → tests → implementation → UI → deploy
+```
 
-| Layer | Owner | What it owns |
-|---|---|---|
-| **Coordination** | Band / Codeband | discovery, message transport, handoffs, human-in-the-loop hooks, coordination history |
-| **Meaning** | `contracts/*.schema.json` | the structure of every inter-agent payload (the SSOT) |
-| **Brains** | fi-runner + agent role prompts | agent loop, guards, provenance, backends |
+No "worked fast, then we'll see." The contract + its executable test exist before
+the implementation that satisfies it.
 
-Keep this repo **thin**: if logic feels reusable (agent loop mechanics,
-guard machinery, provenance plumbing), it belongs upstream in
-[`fi-runner`](https://github.com/BernardUriza/free-intelligence/tree/main/apps/packages/fi-runner),
-not here. This repo adds: agent configs, contracts, Band wiring, a demo UI.
+## Before copying any code from the old repo, classify it
 
-## Rules
+Every piece of the old standalone activist-os falls in exactly one bucket
+(see `docs/REUSE_MAP.md` for the full classification):
 
-1. **Contracts are the source of truth.** Every inter-agent message validates
-   against its schema BEFORE it rides a Band message. A handoff that doesn't
-   validate doesn't happen. Schema changes are deliberate commits, never
-   silent drift inside a prompt.
-2. **Band primitive > custom plumbing.** If Band offers discovery, typed
-   messaging, request/response, or HITL hooks, use Band's version. Judges
-   score Band usage; custom plumbing is risk plus zero points.
-3. **The veto loop is sacred.** CAMPAIGN ⇄ SAFETY revision cycling through
-   Band request/response is the architectural centerpiece. Whatever gets cut
-   when time runs short, this doesn't.
-4. **Provenance tiers travel with every claim.** `fetched_fulltext` >
-   `news_search` > `company_source`. No claim enters a campaign without its
-   sources attached — this is inherited engine behavior from Insult AI, do
-   not regress it.
-5. **No pipeline theater.** Six prompts called in sequence by one process is
-   NOT multi-agent coordination. Agents must exchange context through Band,
-   visible in the coordination history. If a judge can't see the handoffs,
-   they didn't happen.
-6. **Humans hold the send button.** The system assembles campaign packets;
-   it never publishes to a real audience on its own. The HITL checkpoint
-   before packet release is product, not friction.
-7. **Provider logic belongs upstream.** This repo never hardcodes model
-   provider clients, API keys, base URLs, or SDKs. Agents consume
-   `fi_runner.models` abstractions (`ctx.models.resolve(...)`) — FI decides
-   where cognition runs; Activist OS only consumes the capability. A provider
-   SDK import in this repo is a thin-consumer violation.
-8. **Transport swaps require contract smoke parity.** Any new transport must
-   pass the same transport-agnostic smoke as LocalTransport
-   (`tests/test_transport_contract.py`): the canonical 8-step agent order
-   plus SAFETY_VETO followed by SAFETY_APPROVED, with an equivalent
-   coordination history. No UI or demo work depends on a transport until
-   that contract is green — this is what made LocalTransport → BandTransport
-   a drop-in instead of a rewrite.
-9. **Coordination history is the source of truth for the narrative.** The
-   product story renders from real `Transport.get_handoffs()` /
-   `GET /workflow/{run_id}/history` — never from hand-written demo copy.
-   A static fallback is allowed only when clearly labeled as mock/fallback
-   on screen.
+1. **Invariant** — a behavioral contract that must be PRESERVED exactly
+   (the 8-step workflow order, the veto-loop indices, the SSE terminal
+   semantics…). These become `docs/CANONICAL_CONTRACT.md` + executable tests.
+2. **Portable implementation** — copy only AFTER it's been inspected and shown to
+   satisfy the canonical architecture (transport tests, SSE tests, artifact
+   builder, BandTransport, visual tokens).
+3. **Rewrite-only glue** — re-author on the canonical stack, do not copy
+   (integration glue, app wiring, deployment workflows, Next routes).
+4. **Discard / archive** — never carried over (static HTML product app,
+   duplicated API clients, local-only scripts, absolute-path config).
 
-## Cut order when the week compresses
-
-UI polish → COORDINATOR agent → REPORTER as separate agent (fold into
-backend assembly) → multiple use cases. **Never cut**: the veto loop, the
-contracts, provenance tiers, the demo URL.
+**Never copy old implementation directly unless it satisfies the canonical
+architecture.** A green test against an invariant is the license to port; a
+"it's already written" is not.
