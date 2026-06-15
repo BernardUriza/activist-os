@@ -1,17 +1,22 @@
 #!/bin/bash
-# Activist OS API entrypoint. Materializes agent_config.yaml from the
-# AGENT_CONFIG_YAML_B64 secret at runtime (never baked into the image),
-# then serves FastAPI.
+# Template entrypoint. Materializes the Claude Max OAuth token, then serves
+# FastAPI. (Codex backend uses AZURE_OPENAI_* env vars directly — no file.)
 set -euo pipefail
 
-echo "[entrypoint] activist-os api booting — python $(python -V 2>&1) | TRANSPORT=${TRANSPORT:-local}"
+echo "[entrypoint] booting — node $(node -v) | python $(python -V 2>&1)"
 
-if [[ -n "${AGENT_CONFIG_YAML_B64:-}" ]]; then
-  echo "$AGENT_CONFIG_YAML_B64" | base64 -d > /app/agent_config.yaml
-  chmod 600 /app/agent_config.yaml
-  echo "[entrypoint] agent_config.yaml materialized ($(grep -c agent_id /app/agent_config.yaml) agents)"
+# --- Claude Code (Max) OAuth credential ------------------------------------
+# The Claude Agent SDK looks for ~/.claude/.credentials.json. We write it from
+# the CLAUDE_CODE_OAUTH_TOKEN secret at runtime (never baked into the image).
+CRED_DIR="${HOME:-/home/runner}/.claude"
+if [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
+  mkdir -p "$CRED_DIR"
+  printf '{"oauth_token":"%s"}\n' "$CLAUDE_CODE_OAUTH_TOKEN" > "$CRED_DIR/.credentials.json"
+  chmod 600 "$CRED_DIR/.credentials.json"
+  echo "[entrypoint] Claude OAuth token materialized"
 else
-  echo "[entrypoint] WARN: AGENT_CONFIG_YAML_B64 unset — TRANSPORT=band will fail (local still works)"
+  echo "[entrypoint] WARN: CLAUDE_CODE_OAUTH_TOKEN unset — Claude backend will 401 (Codex backend still works if AZURE_OPENAI_* set)"
 fi
 
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+# --- Serve -----------------------------------------------------------------
+exec uvicorn app.app:app --host 0.0.0.0 --port 8080

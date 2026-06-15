@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/* ── Template design tokens (app-*) ─────────────────────────────────────────
+ * Token-first: six color tokens, one edit point to re-brand the whole app.
+ * Components reference `app-*` utilities (bg-app-bg, text-app-accent, …). */
+@theme {
+  --color-app-bg: #0b1220;       /* page background */
+  --color-app-surface: #131c2e;  /* cards / bubbles / input */
+  --color-app-border: #243049;   /* hairlines */
+  --color-app-brand: #4f8cff;    /* primary action */
+  --color-app-accent: #34d399;   /* live / streaming emphasis */
+  --color-app-muted: #8aa0c6;    /* secondary text */
+
+  /* ── Activist OS console tokens (Safety-Gate money-shot) ──────────────── */
+  --color-app-veto: #f87171;       /* veto / blocked — red */
+  --color-app-warn: #fbbf24;       /* amber */
+  --color-app-approve: #34d399;    /* approved — green */
+  --color-app-virtual: #a78bfa;    /* virtual leg (reporter/system) — violet */
+  --color-app-critical: #1a1330;   /* safety gate panel surface */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+  }
+  body {
+    @apply min-h-screen bg-app-bg text-zinc-200 antialiased;
+    overflow-x: clip;
+  }
+}
+
+/* ── Activist OS visual atmosphere ───────────────────────────────────────── */
+#synapse {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 1) 78%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 1) 78%);
+}
+
+.aos-app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #synapse {
+    opacity: 0.25;
+  }
+}
+
+/* ── Glass opacity hierarchy ─────────────────────────────────────────────── */
+.aos-glass-primary {
+  background: rgba(8, 14, 22, 0.78);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
+}
+
+.aos-glass-secondary {
+  background: rgba(8, 14, 22, 0.64);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.aos-glass-critical {
+  background: rgba(9, 15, 24, 0.82);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.32);
+}
+
+.aos-glass-ghost {
+  background: rgba(8, 14, 22, 0.42);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Landing fi-glass system — scoped under .aos-landing so it never touches
+   the /app console (which uses aos-glass-* + app-* tokens). Ported from the
+   committed free-intelligence/apps/activist-os landing (4488edab). ──────── */
+.aos-landing {
+  --fi-bg: #07090f;
+  --fi-surface: rgba(255, 255, 255, 0.06);
+  --fi-surface-strong: rgba(255, 255, 255, 0.1);
+  --fi-border: rgba(255, 255, 255, 0.14);
+  --fi-border-soft: rgba(255, 255, 255, 0.08);
+  --fi-text: rgba(255, 255, 255, 0.92);
+  --fi-muted: rgba(255, 255, 255, 0.62);
+  --fi-faint: rgba(255, 255, 255, 0.4);
+  --fi-accent: #8b5cf6;
+  --fi-evidence: #38bdf8;
+  --fi-safety: #f59e0b;
+  --fi-approved: #22c55e;
+  --fi-veto: #ef4444;
+  --fi-radius-lg: 24px;
+  --fi-radius-md: 16px;
+  --fi-radius-sm: 10px;
+  --fi-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--fi-text);
+}
+
+.aos-landing .fi-glass-panel {
+  background: rgba(8, 14, 22, 0.64);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--fi-radius-lg);
+}
+
+.aos-landing .fi-agent-node {
+  background: var(--fi-surface-strong);
+  border: 1px solid var(--fi-border);
+  border-radius: var(--fi-radius-md);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.aos-landing .fi-agent-node:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--fi-accent), transparent 50%);
+  background: color-mix(in srgb, var(--fi-surface-strong), var(--fi-accent) 6%);
+}
+.aos-landing .fi-veto { border-color: color-mix(in srgb, var(--fi-veto), transparent 45%); }
+.aos-landing .fi-safety { border-color: color-mix(in srgb, var(--fi-safety), transparent 45%); }
+.aos-landing .fi-approved { border-color: color-mix(in srgb, var(--fi-approved), transparent 45%); }
+.aos-landing .fi-evidence-b { border-color: color-mix(in srgb, var(--fi-evidence), transparent 45%); }
+
+.aos-landing .fi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--fi-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.aos-landing .fi-badge::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+.aos-landing .fi-badge--verified { color: var(--fi-evidence); border-color: color-mix(in srgb, var(--fi-evidence), transparent 60%); background: color-mix(in srgb, var(--fi-evidence), transparent 90%); }
+.aos-landing .fi-badge--review { color: var(--fi-safety); border-color: color-mix(in srgb, var(--fi-safety), transparent 60%); background: color-mix(in srgb, var(--fi-safety), transparent 90%); }
+.aos-landing .fi-badge--vetoed { color: var(--fi-veto); border-color: color-mix(in srgb, var(--fi-veto), transparent 60%); background: color-mix(in srgb, var(--fi-veto), transparent 90%); }
+.aos-landing .fi-badge--approved { color: var(--fi-approved); border-color: color-mix(in srgb, var(--fi-approved), transparent 60%); background: color-mix(in srgb, var(--fi-approved), transparent 90%); }
+
+.aos-landing .fi-eyebrow {
+  font-family: var(--fi-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fi-faint);
+}
+.aos-landing .fi-mono { font-family: var(--fi-font-mono); }
+.aos-landing .fi-arrow { color: var(--fi-faint); font-family: var(--fi-font-mono); }
+.aos-landing .text-muted { color: var(--fi-muted); }
+.aos-landing .text-faint { color: var(--fi-faint); }
+
+.aos-landing .fi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--fi-radius-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.aos-landing .fi-btn--primary {
+  background: var(--fi-accent);
+  color: #fff;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--fi-accent), transparent 60%);
+}
+.aos-landing .fi-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 12px 32px color-mix(in srgb, var(--fi-accent), transparent 50%); }
+.aos-landing .fi-btn--ghost {
+  background: var(--fi-surface);
+  color: var(--fi-text);
+  border: 1px solid var(--fi-border);
+}
+.aos-landing .fi-btn--ghost:hover { background: var(--fi-surface-strong); transform: translateY(-1px); }
+
+@keyframes fi-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.aos-landing .fi-rise { animation: fi-rise 0.6s ease both; }

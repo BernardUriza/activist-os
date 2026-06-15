@@ -1,0 +1,176 @@
+"""Band transport — one adapter, two client paths behind the same contract.
+
+OFFLINE (default, CI): a fake client is injected via ``client_factory`` — pure
+in-process, no network, no SDK. This is what the contract tests exercise.
+
+REAL (opt-in): with no ``client_factory``, the real path lazily wraps the
+``thenvoi_rest`` AsyncRestClient (pointed at ``BAND_REST_URL``) and only runs
+when Bernard enables it explicitly (``RUN_BAND_SMOKE=1 TRANSPORT=band
+AGENT_CONFIG_PATH=…``). Credentials come from the config file / env only — never
+the repo. The real path imports the SDK lazily, so the offline path needs none.
+
+Band semantics (identical on both paths):
+  - one room per run (``band_room_id`` stamped on every handoff)
+  - ``evidence`` owns/initiates; ``campaign, safety, outreach, coordinator`` are
+    recruited → 5-seat cap (owner + 4)
+  - ``reporter`` / ``system`` are VIRTUAL: never seated; their legs ride as task
+    events (``metadata.virtual=True``, ``emitted_by``, ``reason``,
+    ``band_message_id=None``)
+  - non-virtual handoffs ride as @mention messages sent AS the from-agent,
+    stamped with ``band_message_id``
+"""
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Callable
+
+from ..band_config import BandConfigError, load_agent_config
+from ..models import AgentName, Handoff, WorkflowRun
+from .base import TransportError
+
+SEAT_CAP = 5
+DEFAULT_REST_URL = "https://app.band.ai"
+
+OWNER = AgentName.EVIDENCE
+SEATED = (AgentName.CAMPAIGN, AgentName.SAFETY, AgentName.OUTREACH, AgentName.COORDINATOR)
+
+
+class BandTransportError(TransportError):
+    """BandTransport could not be constructed or could not reach Band."""
+
+
+def _real_band_client_factory(api_key: str) -> Any:
+    """Wrap the real ``thenvoi_rest`` client behind the fake's duck-typed surface.
+
+    The SDK (and its typed request models) are imported lazily so the offline
+    path never touches them.
+    """
+    try:
+        from thenvoi_rest import (
+            AsyncRestClient,
+            ChatEventRequest,
+            ChatMessageRequest,
+            ChatMessageRequestMentionsItem,
+            ChatRoomRequest,
+            ParticipantRequest,
+        )
+    except ImportError as exc:  # pragma: no cover - only on the real opt-in path
+        raise BandTransportError(
+            "Band SDK not installed — `pip install band-sdk` (thenvoi_rest) is "
+            "required for the real Band path (RUN_BAND_SMOKE)"
+        ) from exc
+
+    client = AsyncRestClient(
+        api_key=api_key,
+        base_url=os.getenv("BAND_REST_URL", DEFAULT_REST_URL),
+    )
+
+    async def create_agent_chat(*, chat):
+        return await client.agent_api_chats.create_agent_chat(chat=ChatRoomRequest())
+
+    async def add_agent_chat_participant(chat_id, *, participant):
+        return await client.agent_api_participants.add_agent_chat_participant(
+            chat_id, participant=ParticipantRequest(participant_id=participant.participant_id)
+        )
+
+    async def create_agent_chat_message(chat_id, *, message):
+        mentions = [
+            ChatMessageRequestMentionsItem(id=m.id, name=getattr(m, "name", None))
+            for m in message.mentions
+        ]
+        return await client.agent_api_messages.create_agent_chat_message(
+            chat_id, message=ChatMessageRequest(content=message.content, mentions=mentions)
+        )
+
+    async def create_agent_chat_event(chat_id, *, event):
+        return await client.agent_api_events.create_agent_chat_event(
+            chat_id,
+            event=ChatEventRequest(content=event.content, message_type=event.message_type),
+        )
+
+    return SimpleNamespace(
+        agent_api_chats=SimpleNamespace(create_agent_chat=create_agent_chat),
+        agent_api_participants=SimpleNamespace(
+            add_agent_chat_participant=add_agent_chat_participant
+        ),
+        agent_api_messages=SimpleNamespace(create_agent_chat_message=create_agent_chat_message),
+        agent_api_events=SimpleNamespace(create_agent_chat_event=create_agent_chat_event),
+    )
+
+
+class BandTransport:
+    name = "band"
+
+    def __init__(
+        self,
+        config_path: str | Path | None = None,
+        client_factory: Callable[[str], object] | None = None,
+    ) -> None:
+        path = Path(config_path) if config_path else Path(os.getenv("AGENT_CONFIG_PATH", ""))
+        try:
+            self._configs = load_agent_config(path)
+        except BandConfigError as exc:
+            raise BandTransportError(str(exc)) from exc
+        self._config_path = path
+        self._client_factory = client_factory or _real_band_client_factory
+        self._handoffs: dict[str, list[Handoff]] = {}
+        self._room_id: str | None = None
+
+    def _client_for(self, agent: AgentName) -> Any:
+        return self._client_factory(self._configs[agent.value]["api_key"])
+
+    def _agent_id(self, agent: AgentName) -> str:
+        return self._configs[agent.value]["agent_id"]
+
+    async def open(self, run: WorkflowRun) -> None:
+        owner = self._client_for(OWNER)
+        resp = await owner.agent_api_chats.create_agent_chat(
+            chat=SimpleNamespace(title=f"Activist OS run {run.run_id}")
+        )
+        self._room_id = resp.data.id
+        run.band_room_id = self._room_id
+        self._handoffs[run.run_id] = []
+        for agent in SEATED:
+            participant = SimpleNamespace(participant_id=self._agent_id(agent))
+            await owner.agent_api_participants.add_agent_chat_participant(
+                self._room_id, participant=participant
+            )
+
+    async def deliver(self, run: WorkflowRun, handoff: Handoff) -> Handoff:
+        handoff.metadata.band_room_id = self._room_id
+        handoff.metadata.seat_cap = SEAT_CAP
+
+        if handoff.is_virtual_leg:
+            poster = handoff.from_agent if handoff.from_agent in SEATED else OWNER
+            handoff.metadata.virtual = True
+            handoff.metadata.emitted_by = poster.value
+            handoff.metadata.reason = "participant_limit_compat"
+            content = (
+                f"{handoff.type.name} from={handoff.from_agent.value} "
+                f"to={handoff.to_agent.value}: {handoff.summary}"
+            )
+            await self._client_for(poster).agent_api_events.create_agent_chat_event(
+                self._room_id,
+                event=SimpleNamespace(content=content, message_type="task"),
+            )
+        else:
+            mention = SimpleNamespace(
+                id=self._agent_id(handoff.to_agent),
+                name=handoff.to_agent.value.capitalize(),
+            )
+            message = SimpleNamespace(
+                content=f"{handoff.type.name}: {handoff.summary}",
+                mentions=[mention],
+            )
+            resp = await self._client_for(handoff.from_agent).agent_api_messages.create_agent_chat_message(
+                self._room_id, message=message
+            )
+            handoff.metadata.band_message_id = resp.data.id
+
+        self._handoffs[run.run_id].append(handoff)
+        return handoff
+
+    async def get_handoffs(self, run_id: str) -> list[Handoff]:
+        return list(self._handoffs.get(run_id, []))

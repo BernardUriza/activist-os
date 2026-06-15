@@ -1,8 +1,7 @@
-[tool.pyright]
-pythonVersion = "3.11"
-venvPath = "."
-venv = ".venv"
-
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "contract: canonical-invariant contract test (RED until the implementation lands in Step 3)",
+]
