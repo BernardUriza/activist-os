@@ -1,40 +1,32 @@
-# Reuse Map — old standalone activist-os → fresh canonical build
+# Reuse Map — migration status (completed)
 
-Every piece of the old standalone (`BernardUriza/activist-os`, read from
-`/tmp/aos-legacy`) classified into the four buckets (per [[architecture]]). Nothing
-is copied until it's classified and — for code — shown to satisfy the canonical
-architecture via a passing contract test.
+Status: **DONE** — all portable implementation has been ported; discard list never
+landed; rewrite-only glue was re-authored fresh on the canonical stack.
 
-## 1. PRESERVE as invariant → `docs/CANONICAL_CONTRACT.md` + tests
-| Old source | Invariant |
-|---|---|
-| `api/tests/test_transport_contract.py` | 8-step `from_agent` order; `veto_index=2`, `approved_index=4`; veto-before-approve |
-| `api/tests/test_events_endpoint.py` | SSE `text/event-stream`; `handoff_sent` + `workflow_completed`; `stream_end` last; 404 on unknown |
-| transport_contract Band assertions | reporter/system virtual; 5-seat cap; `band_room_id` per run |
-| `contracts/*.schema.json` (10) + `api/app/models/contracts.py` | the typed contract shapes |
-| `docs/DEMO_SCRIPT.md` | Safety-Gate-as-money-shot presentation model |
+This document is preserved as a historical record of what came from the old
+standalone and how each piece was classified. It is not an active checklist.
 
-## 2. PORTABLE implementation → copy ONLY after inspection + green contract test
-| Old source | Note |
-|---|---|
-| `api/app/runner/transports/{base,local,band}_transport.py` | port after the transport-parity contract test is green |
-| `api/app/runner/workflow_runner.py` | the 8-step loop logic — port behind the order/index test |
-| `api/app/main.py::_build_artifacts` | history-artifacts builder — lock its shape under a test first |
-| `api/band_agents/*` + `oauth_adapter.py` | BandTransport side — port after the SSE/parity tests |
-| `web/` visual tokens / Safety-Gate presentation | port INTO the Next `web/` only (never the static HTML) |
+## What was classified and the outcome
 
-## 3. REWRITE-only glue → re-author on the canonical stack, do NOT copy
-- `api/app/runner/agents/*` — agent logic (prompts/roles are reference; re-author against the contracts)
-- `api/app/main.py` FastAPI wiring + routes — re-author on the template's `app/` layout
-- deployment workflows (`infra/`, Makefile targets) — the template ships its own Azure workflows
-- Next routes / app wiring — built fresh in `web/`
+### PRESERVED as invariants
+The behavioral contracts from the old standalone's test suite became
+[docs/CANONICAL_CONTRACT.md](CANONICAL_CONTRACT.md). The 8-step workflow order,
+veto/approved indices, SSE terminal semantics, and reporter-as-virtual are all
+there with the original test coverage as the spec.
 
-## 4. DISCARD / archive → never carried over
-- `web/*.html` (`demo.html`, `index.html`, `checklist.html`) — static HTML product app ([[ui]])
-- duplicated API clients
-- local-only scripts (`run_band_agents.sh`, ad-hoc Makefile targets)
-- absolute-path config (`/Users/...` hardcoded anything)
+### PORTED (portable implementation)
+- Transport layer (`local`, `band`) — ported after contract tests were green
+- `workflow_runner.py` — the 8-step loop, ported behind the order/index tests
+- `_build_artifacts` — history-artifacts builder, shape locked under a test
+- Visual tokens / Safety-Gate presentation — ported into `web/` (Next.js only)
 
-**Source of truth for the old code: the GitHub archive `BernardUriza/activist-os`
-(temporarily at `/tmp/aos-legacy` for this inspection). Never re-cloned to
-`~/Documents` as live code** — see memory `activist-os-build-fresh-never-resurrect`.
+### REWRITTEN (glue / wiring)
+- `api/app/main.py` FastAPI routes — re-authored on the template stack
+- Agent logic (`api/app/runner/agents/`) — roles/prompts as reference, prompts re-authored
+- Azure deploy workflows (`.github/workflows/`) — template's own workflows used
+- Next.js routes and app wiring — built fresh in `web/`
+
+### DISCARDED
+- `web/*.html` static demo shells — never carried over
+- Duplicated API clients
+- Local-only scripts and absolute-path config

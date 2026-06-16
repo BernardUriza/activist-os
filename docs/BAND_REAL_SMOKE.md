@@ -11,10 +11,16 @@ The real Band path is **opt-in** and only runs when you enable it explicitly.
 | `RUN_BAND_SMOKE=1` | Arms the opt-in smoke test (otherwise it skips). |
 | `TRANSPORT=band` | Makes the API (`app.main`) use the real Band transport. |
 | `BAND_REST_URL=https://app.band.ai` | Band REST endpoint (defaults to this if unset). |
-| `AGENT_CONFIG_PATH=/abs/path/agent_config.yaml` | Local file with the agent credentials. |
+| `AGENT_CONFIG_PATH=/abs/path/agent_config.yaml` | Local file with agent credentials (development). |
+| `AGENT_CONFIG_YAML_B64=<base64>` | Base64-encoded YAML for deploy environments (set as a Container App secret; `AGENT_CONFIG_PATH` takes precedence if both are set). |
 
 You also need the Band SDK installed: `pip install band-sdk` (provides
 `thenvoi_rest`). The offline path never imports it.
+
+> **Deploy note**: in Azure Container Apps the secret is set out-of-band:
+> `az containerapp secret set --name activist-os-api --secrets "agent-config-b64=<value>"`
+> and wired as the `AGENT_CONFIG_YAML_B64` env var. The current live deploy
+> uses `TRANSPORT=local` pending this config being resolved.
 
 ## `agent_config.yaml` shape
 

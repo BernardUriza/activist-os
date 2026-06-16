@@ -1,31 +1,27 @@
-# Architecture — contracts first, classify before copy
+# Architecture — contracts first, implement second
 
-**Behavior is ported as CONTRACTS first, implementation second.** The order for
-this whole build (coagent, 2026-06-14):
+**Behavior is expressed as contracts before implementation.** The order for any
+change to this codebase:
 
 ```
-rules → contracts → tests → implementation → UI → deploy
+contract (what must be true) → test → implementation → UI → deploy
 ```
 
-No "worked fast, then we'll see." The contract + its executable test exist before
-the implementation that satisfies it.
+The behavioral invariants live in [docs/CANONICAL_CONTRACT.md](../../docs/CANONICAL_CONTRACT.md).
+No implementation decision is valid if it breaks those invariants.
 
-## Before copying any code from the old repo, classify it
+## Boundaries
 
-Every piece of the old standalone activist-os falls in exactly one bucket
-(see `docs/REUSE_MAP.md` for the full classification):
+| Layer | Location | Rule |
+|---|---|---|
+| API contract | `docs/CANONICAL_CONTRACT.md` | Never change without updating the contract tests |
+| Workflow core | `api/app/` | `app.main:app` is the entrypoint — not `app.app:app` |
+| Transport | `api/app/transports/` | `local` (default/demo), `band` (real agents, opt-in) |
+| Web surface | `web/` | fi-glass `AgentConversationSurface` is the canonical primary |
+| Artifacts rail | `web/components/app/` | Safety Gate / Evidence Brief / Campaign Packet |
 
-1. **Invariant** — a behavioral contract that must be PRESERVED exactly
-   (the 8-step workflow order, the veto-loop indices, the SSE terminal
-   semantics…). These become `docs/CANONICAL_CONTRACT.md` + executable tests.
-2. **Portable implementation** — copy only AFTER it's been inspected and shown to
-   satisfy the canonical architecture (transport tests, SSE tests, artifact
-   builder, BandTransport, visual tokens).
-3. **Rewrite-only glue** — re-author on the canonical stack, do not copy
-   (integration glue, app wiring, deployment workflows, Next routes).
-4. **Discard / archive** — never carried over (static HTML product app,
-   duplicated API clients, local-only scripts, absolute-path config).
+## The one rule that never changes
 
-**Never copy old implementation directly unless it satisfies the canonical
-architecture.** A green test against an invariant is the license to port; a
-"it's already written" is not.
+**`/workflow/*` is the source of truth.** The web adapter (`useActivistAgent`)
+maps transport events → `ChatMessage[]`; fi-glass renders them. Neither the
+backend nor the frontend protocol changes to fit the other's convenience.

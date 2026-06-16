@@ -10,6 +10,15 @@ review, and human-action tasks **before anything goes public**.
 Built for the **Band of Agents Hackathon** (lablab.ai) — Regulated &
 High-Stakes Workflows.
 
+## Live demo
+
+| Surface | URL |
+|---|---|
+| Web (fi-glass chat + artifacts rail) | https://proud-stone-023fae70f.7.azurestaticapps.net/app |
+| API | https://activist-os-api.greenbay-d46a7a63.eastus.azurecontainerapps.io |
+
+Both halves auto-deploy on every push to `main` (path-scoped GitHub Actions).
+
 ## The problem
 
 Advocacy is easy to start and easy to get wrong. Grassroots groups carry real
@@ -56,15 +65,16 @@ its approvals is marketing.
 
 ## What's in the repo
 
-- **`api/`** — the deterministic AOS coordination core behind executable
-  contracts ([fi_runner](https://github.com/BernardUriza/free-intelligence) +
-  fi-core lineage). FastAPI app `app.main:app`, real Band path opt-in, SSE
-  workflow stream.
-- **`web/`** — Next.js 16 + React 19 + Tailwind v4:
+- **`api/`** — the coordination core. FastAPI on `app.main:app`, `TRANSPORT=local`
+  (deterministic mock) or `TRANSPORT=band` (real Band agents — see
+  [docs/BAND_REAL_SMOKE.md](docs/BAND_REAL_SMOKE.md)). SSE workflow stream. Exact
+  behavioral contract in [docs/CANONICAL_CONTRACT.md](docs/CANONICAL_CONTRACT.md).
+- **`web/`** — Next.js 16 + fi-glass + Tailwind v4:
   - **`/`** — the product landing.
-  - **`/app`** — the live coordination console: animated synapse backdrop,
-    cold-open mock, the Agent Conversation Surface, the Safety-Gate money-shot,
-    and a semantic coordination history.
+  - **`/app`** — the live coordination console: fi-glass `AgentConversationSurface`
+    as the primary chat surface (1 concern → 8 agent handoffs, VETO/APPROVED
+    severity per message), artifacts rail (Safety Gate / Evidence Brief / Campaign
+    Packet). Legacy dashboard preserved at `/app?dashboard=1`.
 
 ## Run it locally
 
@@ -74,7 +84,7 @@ cd api
 mamba env create -f environment.yml && conda activate app
 export CLAUDE_CODE_OAUTH_TOKEN="$(claude setup-token)"   # or set APP_BACKEND=codex
 uvicorn app.main:app --reload --port 8080
-curl localhost:8080/health        # → {"ok": true, ...}
+curl localhost:8080/health        # → {"status":"ok"}
 
 # Web — in another shell
 cd web
@@ -83,21 +93,31 @@ NEXT_PUBLIC_API_URL=http://localhost:8080 npm run dev    # → http://localhost:
 ```
 
 Open `http://localhost:3000/` (landing) and `http://localhost:3000/app` (console).
-The console opens on a reproducible cold-open mock — hit **Run workflow** for a
-live coordination.
+The console opens on a reproducible cold-open mock — type a concern and hit Enter
+for a live coordination.
 
 ### API surface
 
 | Route | Purpose |
 |---|---|
-| `GET /health`, `/health/full` | liveness / readiness (keyless) |
+| `GET /health` | liveness (keyless — no auth required) |
 | `POST /workflow/start` | start a coordination run → `{ run_id }` |
-| `GET /workflow/{run_id}/events` | SSE stream (handoffs → `stream_end`) |
+| `GET /workflow/{run_id}/events` | SSE stream (`handoff_sent…` → `stream_end`) |
 | `GET /workflow/{run_id}/history` | full coordination record + artifacts |
+
+See [docs/CANONICAL_CONTRACT.md](docs/CANONICAL_CONTRACT.md) for the exact
+behavioral invariants (8-step order, veto indices, SSE terminal semantics).
 
 ## Deploy (Azure)
 
-Path-scoped workflows trigger on push to `main`: the API ships to **Container
-Apps** (OIDC + GHCR), the web to **Static Web Apps**. "What's on `main` IS what's
-live." See `.github/workflows/` and `.env.example` for the env surface; the OIDC
-federated credential subject is `repo:<owner>/<repo>:ref:refs/heads/main`.
+Path-scoped workflows trigger on push to `main`:
+- `api/**` → Container Apps (OIDC + GHCR, `app.main:app`, port 8080)
+- `web/**` → Static Web Apps (`next build` → `output: export`)
+
+Auth: OIDC federated credential, subject
+`repo:<owner>/<repo>:ref:refs/heads/main`. Required repo vars/secrets:
+`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`,
+`AZURE_CONTAINER_APP_NAME`, `AZURE_RESOURCE_GROUP`,
+`AZURE_STATIC_WEB_APPS_API_TOKEN`, `NEXT_PUBLIC_API_URL`.
+
+See `.github/workflows/` for the full CI spec.
