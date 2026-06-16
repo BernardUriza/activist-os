@@ -5,8 +5,9 @@ AgentChat-oriented experience on top of [`fi-glass`](https://www.npmjs.com/packa
 without changing the canonical `/workflow` backend. It is written from the
 **real, inspected** fi-glass / `@free-intelligence/core` exports — not assumptions.
 
-Status: **framework recovered (Paso 5A)**. The UI pivot (5B+) has NOT happened yet;
-`/app` is still the dashboard console.
+Status: **canary adapter built + live-smoked (Paso 5B / 5B-S)**. The UI pivot has
+NOT happened yet; `/app` is still the dashboard console and the fi-glass canary is
+opt-in behind `/app?fi_glass_canary=1`. See [Live smoke findings](#live-smoke-findings).
 
 ## 1. Why Activist OS is a fi-glass canary
 
@@ -139,7 +140,53 @@ separate panel competing with the chat.
 - Do **not** fake the virtual reporter — `virtual` comes only from real handoff metadata.
 - Do **not** hide the safety veto — it is the differentiator; it stays loud.
 
+## Live smoke findings
+
+Verified end-to-end against the **real** local `/workflow/*` backend
+(`TRANSPORT=local`), driving the canary in a real browser at
+`/app?fi_glass_canary=1` — not via proxy. ~8 distinct live runs.
+
+- `AgentConversationSurface` works as the canonical surface. Agent identity,
+  @mention target, and VETO/APPROVED severity all expressed through its
+  per-message slots (`renderHeader` / `renderBadge` / `messageBubbleClassName`).
+- **`useAgentConversation` does NOT model `1 send → 8+ handoff messages`.** It
+  folds one `send` into one assistant turn (`foldAssistantTurn`). A governed
+  workflow emits 8+ agent messages per concern, which the fold would collapse
+  into a single bubble.
+- Activist OS needs either **multi-message agent turns** or an **external /
+  controlled transcript mode** for workflow adapters (the consumer supplies
+  `messages`, the surface renders them).
+- **RESOLVED UPSTREAM (fi-glass 1.2.0):** rather than hack the consumer,
+  `useAgentConversation` gained a `externalMessages?: ChatMessage[]` controlled
+  mode — when provided, the consumer owns the visible thread (no optimistic push,
+  no fold), while `send`/`turn`/`turnError`/`retry`/`newConversation` machinery
+  stays. Fully backward-compatible (undefined = unchanged). The canary now
+  consumes it as a **thin** wrapper:
+  `useAgentConversation(agent, { externalMessages: agent.messages })` — the
+  hand-rolled `AgentConversation` object is gone. This is the canary-driven
+  upstream loop: a real framework limit fixed in `free-intelligence`, the
+  consumer thinned, the E2E green.
+- Backend used: `POST /workflow/start`, `GET /workflow/{id}/events` (SSE),
+  `GET /workflow/{id}/history`. **No `/chat/stream`.** `stream_end` closes the
+  `EventSource`, then `/history` replaces/enriches the transcript.
+- Render-loop fixed at the root: `useActivistAgent.send` is stable across a run
+  (mode read via a ref), so the `AgentConversation` object does not churn during
+  the local-transport burst. Console is clean across repeated runs.
+
+## Deploy blocker observed
+
+- `api/Dockerfile` + `api/entrypoint.sh` start **`app.app:app`** (the template's
+  chat face, `POST /chat/stream`) — **not `app.main:app`** (the Activist OS
+  workflow API exposing `/workflow/*`). If deploy uses `app.app:app`, production
+  will **not** expose `/workflow/*` and the web app's `startWorkflow` will 404.
+  Needs verification before any deploy. NOT fixed here (no backend/deploy changes).
+- Health: the local API exposes **`/health`**, not `/health/full`. Treat `/health`
+  as the current observed truth unless the `/health/full` contract is restored.
+
 ## Next
 
-**5B** — build the adapter (`useActivistAgent` + `workflow → ChatMessage[]` mapper)
-behind the existing dashboard, proving parity, before replacing any UI.
+**Pivot (gated on Bernard's review)** — design the pivot as fi-glass chat as the
+primary surface + an artifacts rail, NOT a blind deletion of the dashboard. The
+visual replacement is the big move; Bernard sees the canary first, then it is
+designed. The `useAgentConversation` multi-message enhancement and the deploy
+blocker are tracked above as follow-ups.
