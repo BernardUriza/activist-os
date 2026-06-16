@@ -36,6 +36,7 @@ export type ActivistMode = "IDLE" | "MOCK" | "STARTING" | "STREAMING" | "LIVE" |
 
 export interface ActivistAgent extends AgentHook {
   messages: ChatMessage[];
+  history: WorkflowHistory | null;
   runId: string | null;
   mode: ActivistMode;
   error: string | null;
@@ -166,5 +167,5 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
     [history, events],
   );
 
-  return { turn, isStreaming, send, abort, reset, messages, runId, mode, error };
+  return { turn, isStreaming, send, abort, reset, messages, history, runId, mode, error };
 }
