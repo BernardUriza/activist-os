@@ -32,3 +32,7 @@ dependencies:
       # money funnel for any bot that finds it — slowapi is the cheap floor;
       # the X-API-Key check sits ON TOP.
       - "slowapi>=0.1.9"
+      # Band SDK (thenvoi_rest) — the real Band transport client, required when
+      # TRANSPORT=band. The offline contract tests inject a fake and never import
+      # it. Pinned to the version the transport code is written against.
+      - "band-sdk==1.0.0"
