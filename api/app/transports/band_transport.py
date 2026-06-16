@@ -26,7 +26,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable
 
-from ..band_config import BandConfigError, load_agent_config
+from ..band_config import BandConfigError, load_agent_config, load_agent_config_from_b64
 from ..models import AgentName, Handoff, WorkflowRun
 from .base import TransportError
 
@@ -108,9 +108,18 @@ class BandTransport:
         config_path: str | Path | None = None,
         client_factory: Callable[[str], object] | None = None,
     ) -> None:
-        path = Path(config_path) if config_path else Path(os.getenv("AGENT_CONFIG_PATH", ""))
+        env_path = os.getenv("AGENT_CONFIG_PATH", "")
+        path = Path(config_path) if config_path else (Path(env_path) if env_path else None)
+        b64 = os.getenv("AGENT_CONFIG_YAML_B64", "")
         try:
-            self._configs = load_agent_config(path)
+            if path is not None:
+                self._configs = load_agent_config(path)
+            elif b64:
+                self._configs = load_agent_config_from_b64(b64)
+            else:
+                raise BandConfigError(
+                    "no agent config: set AGENT_CONFIG_PATH (file) or AGENT_CONFIG_YAML_B64 (inline)"
+                )
         except BandConfigError as exc:
             raise BandTransportError(str(exc)) from exc
         self._config_path = path
