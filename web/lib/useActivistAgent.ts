@@ -52,6 +52,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
     initialRunId ? null : MOCK_WORKFLOW_HISTORY,
   );
   const [error, setError] = useState<string | null>(null);
+  const [sentConcern, setSentConcern] = useState<string | null>(null);
 
   const esRef = useRef<EventSource | null>(null);
   const openedFor = useRef<string | null>(null);
@@ -119,6 +120,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
     async (message: string) => {
       const concern = message.trim();
       if (!concern || modeRef.current === "STARTING" || modeRef.current === "STREAMING") return;
+      setSentConcern(concern);
       setError(null);
       setHistory(null);
       setEvents([]);
@@ -148,6 +150,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
     setEvents([]);
     setRunId(null);
     setError(null);
+    setSentConcern(null);
     setHistory(MOCK_WORKFLOW_HISTORY);
     setMode("MOCK");
   }, []);
@@ -168,10 +171,17 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
     [isStreaming],
   );
 
-  const messages = useMemo(
-    () => (history ? chatMessagesFromHistory(history) : chatMessagesFromEvents(events)),
-    [history, events],
-  );
+  const messages = useMemo(() => {
+    const transcript = history ? chatMessagesFromHistory(history) : chatMessagesFromEvents(events);
+    if (!sentConcern) return transcript;
+    const userMessage: ChatMessage = {
+      id: "user-concern",
+      role: "user",
+      content: sentConcern,
+      timestamp: "",
+    };
+    return [userMessage, ...transcript];
+  }, [history, events, sentConcern]);
 
   return { turn, isStreaming, send, abort, reset, messages, history, runId, mode, error };
 }

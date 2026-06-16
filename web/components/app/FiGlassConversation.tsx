@@ -35,6 +35,7 @@ export function FiGlassConversation({ agent }: { agent: ActivistAgent }) {
         composerBoxClassName="glass-chat-composer"
         composerTextareaClassName="glass-chat-composer-input"
         messageBubbleClassName={(m) => {
+          if (m.role === "user") return "glass-chat-bubble-user";
           const md = metaOf(m);
           if (md?.severity === "critical") return "glass-chat-bubble-veto";
           if (md?.severity === "approved") return "glass-chat-bubble-approved";
