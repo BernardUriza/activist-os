@@ -55,15 +55,20 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
 
   const esRef = useRef<EventSource | null>(null);
   const openedFor = useRef<string | null>(null);
+  const streamEndedRef = useRef(false);
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
-  const loadHistory = useCallback(async (id: string) => {
+  const loadHistory = useCallback(async (id: string, retries = 0) => {
     try {
       const data = await getWorkflowHistory(id);
       setHistory(data);
       setMode("LIVE");
     } catch (err) {
+      if (err instanceof WorkflowNotFoundError && retries > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return loadHistory(id, retries - 1);
+      }
       setError(
         err instanceof WorkflowNotFoundError
           ? `Run ${id} not found.`
@@ -78,6 +83,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
       if (openedFor.current === id) return;
       openedFor.current = id;
       esRef.current?.close();
+      streamEndedRef.current = false;
       setEvents([]);
       setHistory(null);
       setMode("STREAMING");
@@ -94,6 +100,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
         }
         setEvents((prev) => [...prev, payload]);
         if (payload.event_type === "stream_end") {
+          streamEndedRef.current = true;
           es.close();
           void loadHistory(id);
         }
@@ -101,9 +108,8 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
 
       es.onerror = () => {
         es.close();
-        // SSE dropped before stream_end — fall back to a direct history fetch
-        // (never to a mock). loadHistory flips to ERROR if that fails too.
-        void loadHistory(id);
+        if (streamEndedRef.current) return;
+        void loadHistory(id, 3);
       };
     },
     [loadHistory],
