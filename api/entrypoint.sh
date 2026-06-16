@@ -19,4 +19,7 @@ else
 fi
 
 # --- Serve -----------------------------------------------------------------
-exec uvicorn app.app:app --host 0.0.0.0 --port 8080
+# app.main:app is the Activist OS product API (/workflow/* + /health + SSE).
+# NOT app.app:app — that's the template's chat face (/chat/stream) which this
+# product does not use; deploying it would 404 every /workflow/* call.
+exec uvicorn app.main:app --host 0.0.0.0 --port 8080

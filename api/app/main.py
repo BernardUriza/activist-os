@@ -7,22 +7,43 @@ in-memory, and exposes the canonical history + SSE audit stream.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 from collections.abc import AsyncIterator
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
+from .auth import limiter, verify_api_key
 from .contracts import UserConcern
 from .models import HandoffType, VIRTUAL_AGENTS, WorkflowRun
+from .observability import request_observability_middleware
 from .transports import create_transport
 from .workflow_runner import WorkflowRunner
 
+# Cable app.* logs into uvicorn's stdout — without this, info() calls vanish in
+# the Container App. Idempotent on --reload. (Mirrors the template's app.app;
+# this is the DEPLOYED app now, so the cabling has to live here.)
+_root_log = logging.getLogger()
+if not _root_log.handlers:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-7s [%(name)s] %(message)s",
+        datefmt="%H:%M:%S",
+    )
+logging.getLogger("app").setLevel(logging.INFO)
+
 app = FastAPI(title="activist-os", version="0.1.0")
 
-# CORS — the /demo Next app calls these endpoints cross-origin. Same pattern the
+# Per-request id + timing + one access log per request (total-instrumentation
+# doctrine). Same middleware the template's app.app uses.
+app.middleware("http")(request_observability_middleware)
+
+# CORS — the Next app calls these endpoints cross-origin. Same pattern the
 # template's app.app uses: lock to CORS_ALLOW_ORIGINS in prod, wide-open in dev.
 _cors_env = (os.getenv("CORS_ALLOW_ORIGINS") or "").strip()
 _cors_origins = (
@@ -33,7 +54,14 @@ app.add_middleware(
     allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Request-ID", "Server-Timing"],
 )
+
+# Per-IP rate limit — the cost-control floor. /workflow/start can spawn the real
+# band of agents (band transport), so a casual crawler hitting it must not drain
+# the agent budget. Same limiter the template gates /chat/stream with.
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 _transport = create_transport()
 _runner = WorkflowRunner(_transport)
@@ -63,8 +91,9 @@ async def health_full() -> dict:
     }
 
 
-@app.post("/workflow/start", status_code=202)
-async def start_workflow(concern: UserConcern) -> dict:
+@app.post("/workflow/start", status_code=202, dependencies=[Depends(verify_api_key)])
+@limiter.limit("30/hour")
+async def start_workflow(request: Request, concern: UserConcern) -> dict:
     run = WorkflowRun(concern=concern)
     await _runner.run(run)
     _runs[run.run_id] = run
