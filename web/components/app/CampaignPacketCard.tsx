@@ -58,6 +58,14 @@ export function CampaignPacketCard({ packet }: { packet: CampaignPacket | null }
             <Stat value={packet.volunteer_tasks_count} label="Tasks" />
             <Stat value={packet.provenance_items_count} label="Provenance" />
           </div>
+
+          {packet.reporter_virtual && (
+            <p className="aos-glass-ghost mt-3 rounded-lg p-2.5 text-[11px] leading-relaxed text-app-muted">
+              <span className="font-semibold text-app-virtual">Why a virtual reporter?</span>{" "}
+              Reporter is virtualized to respect Band room participant limits while preserving the
+              canonical workflow history.
+            </p>
+          )}
         </>
       )}
     </section>
