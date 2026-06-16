@@ -19,6 +19,7 @@ import { type StreamEvent } from "../../components/app/LiveEventLog";
 import { SafetyGateCard } from "../../components/app/SafetyGateCard";
 import { SemanticStatusBar } from "../../components/app/SemanticStatusBar";
 import { AgentConversationSurface } from "../../components/app/AgentConversationSurface";
+import { FiGlassConversationCanary } from "../../components/app/FiGlassConversationCanary";
 import { MOCK_DEFAULT_CONCERN, MOCK_WORKFLOW_HISTORY } from "../../lib/mock-workflow";
 import { messagesFromEvents, messagesFromHistory } from "../../lib/workflow-presentation";
 
@@ -29,6 +30,7 @@ export function AppClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const deepLinkRunId = searchParams.get("run_id");
+  const fiGlassCanary = searchParams.get("fi_glass_canary") === "1";
 
   const [concern, setConcern] = useState(deepLinkRunId ? "" : MOCK_DEFAULT_CONCERN);
   const [mode, setMode] = useState<Mode>(deepLinkRunId ? "IDLE" : "MOCK");
@@ -124,6 +126,14 @@ export function AppClient() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
+      {fiGlassCanary && (
+        <section className="mb-6 rounded-xl border border-app-brand/40 bg-app-brand/5 p-4">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-wide text-app-brand">
+            fi-glass canary · preview surface (the dashboard below is unchanged)
+          </p>
+          <FiGlassConversationCanary runId={deepLinkRunId} />
+        </section>
+      )}
       <header className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
