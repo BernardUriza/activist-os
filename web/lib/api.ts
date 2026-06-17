@@ -134,6 +134,12 @@ export interface WorkflowArtifacts {
   campaign_packet: CampaignPacket;
 }
 
+export interface BandProvenance {
+  room_id: string;
+  messages_sent: number;
+  virtual_events: number;
+}
+
 export interface WorkflowHistory {
   run_id: string;
   status: string;
@@ -141,6 +147,7 @@ export interface WorkflowHistory {
   handoffs: HandoffView[];
   veto_loop: VetoLoop;
   artifacts: WorkflowArtifacts;
+  band?: BandProvenance;
 }
 
 export class WorkflowNotFoundError extends Error {
