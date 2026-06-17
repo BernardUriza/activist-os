@@ -33,6 +33,10 @@ from .base import TransportError
 SEAT_CAP = 5
 DEFAULT_REST_URL = "https://app.band.ai"
 
+CREATE_PER_RUN = "create_per_run"
+REUSE_SINGLE = "reuse_single"
+ROOM_STRATEGIES = (CREATE_PER_RUN, REUSE_SINGLE)
+
 OWNER = AgentName.EVIDENCE
 SEATED = (AgentName.CAMPAIGN, AgentName.SAFETY, AgentName.OUTREACH, AgentName.COORDINATOR)
 
@@ -107,7 +111,23 @@ class BandTransport:
         self,
         config_path: str | Path | None = None,
         client_factory: Callable[[str], object] | None = None,
+        room_strategy: str | None = None,
+        reuse_room_id: str | None = None,
     ) -> None:
+        self._strategy = (room_strategy or os.getenv("BAND_ROOM_STRATEGY") or CREATE_PER_RUN).lower()
+        self._reuse_room_id = (
+            reuse_room_id if reuse_room_id is not None else os.getenv("BAND_REUSE_ROOM_ID", "")
+        ).strip()
+        if self._strategy not in ROOM_STRATEGIES:
+            raise BandTransportError(
+                f"unknown BAND_ROOM_STRATEGY={self._strategy!r} "
+                f"(expected {CREATE_PER_RUN!r} or {REUSE_SINGLE!r})"
+            )
+        if self._strategy == REUSE_SINGLE and not self._reuse_room_id:
+            raise BandTransportError(
+                f"BAND_ROOM_STRATEGY={REUSE_SINGLE} requires BAND_REUSE_ROOM_ID "
+                "(the stable Band room uuid to reuse across runs)"
+            )
         env_path = os.getenv("AGENT_CONFIG_PATH", "")
         path = Path(config_path) if config_path else (Path(env_path) if env_path else None)
         b64 = os.getenv("AGENT_CONFIG_YAML_B64", "")
@@ -134,13 +154,17 @@ class BandTransport:
         return self._configs[agent.value]["agent_id"]
 
     async def open(self, run: WorkflowRun) -> None:
+        self._handoffs[run.run_id] = []
+        if self._strategy == REUSE_SINGLE:
+            self._room_id = self._reuse_room_id
+            run.band_room_id = self._room_id
+            return
         owner = self._client_for(OWNER)
         resp = await owner.agent_api_chats.create_agent_chat(
             chat=SimpleNamespace(title=f"Activist OS run {run.run_id}")
         )
         self._room_id = resp.data.id
         run.band_room_id = self._room_id
-        self._handoffs[run.run_id] = []
         for agent in SEATED:
             participant = SimpleNamespace(participant_id=self._agent_id(agent))
             await owner.agent_api_participants.add_agent_chat_participant(
@@ -150,6 +174,7 @@ class BandTransport:
     async def deliver(self, run: WorkflowRun, handoff: Handoff) -> Handoff:
         handoff.metadata.band_room_id = self._room_id
         handoff.metadata.seat_cap = SEAT_CAP
+        prefix = f"[run {run.run_id[:8]}] "
 
         if handoff.is_virtual_leg:
             poster = handoff.from_agent if handoff.from_agent in SEATED else OWNER
@@ -157,7 +182,7 @@ class BandTransport:
             handoff.metadata.emitted_by = poster.value
             handoff.metadata.reason = "participant_limit_compat"
             content = (
-                f"{handoff.type.name} from={handoff.from_agent.value} "
+                f"{prefix}{handoff.type.name} from={handoff.from_agent.value} "
                 f"to={handoff.to_agent.value}: {handoff.summary}"
             )
             await self._client_for(poster).agent_api_events.create_agent_chat_event(
@@ -170,7 +195,7 @@ class BandTransport:
                 name=handoff.to_agent.value.capitalize(),
             )
             message = SimpleNamespace(
-                content=f"{handoff.type.name}: {handoff.summary}",
+                content=f"{prefix}{handoff.type.name}: {handoff.summary}",
                 mentions=[mention],
             )
             resp = await self._client_for(handoff.from_agent).agent_api_messages.create_agent_chat_message(

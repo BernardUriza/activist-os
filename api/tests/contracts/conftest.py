@@ -86,3 +86,25 @@ def band_app(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "_transport", transport)
     monkeypatch.setattr(main, "_runner", WorkflowRunner(transport))
     return store
+
+
+@pytest.fixture
+def band_reuse_app(tmp_path, monkeypatch):
+    """Like ``band_app`` but with the ``reuse_single`` room strategy, so the
+    history HTTP contract can prove ``band.room_id`` is the reused room (and that
+    no new room was ever minted)."""
+    reuse_room_id = "stable-room-abc123"
+    lines = [f'{n}:\n  agent_id: "id-{n}"\n  api_key: "key-{n}"\n' for n in AGENT_NAMES]
+    cfg = tmp_path / "agent_config.yaml"
+    cfg.write_text("".join(lines))
+
+    store = FakeBandStore()
+    transport = BandTransport(
+        config_path=cfg,
+        client_factory=lambda api_key: FakeBandClient(api_key, store),
+        room_strategy="reuse_single",
+        reuse_room_id=reuse_room_id,
+    )
+    monkeypatch.setattr(main, "_transport", transport)
+    monkeypatch.setattr(main, "_runner", WorkflowRunner(transport))
+    return SimpleNamespace(store=store, reuse_room_id=reuse_room_id)
