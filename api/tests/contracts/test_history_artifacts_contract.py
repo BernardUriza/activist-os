@@ -106,3 +106,30 @@ async def test_history_404_for_unknown_run():
     async with _client() as client:
         res = await client.get("/workflow/no-such-run/history")
     assert res.status_code == 404
+
+
+async def test_history_omits_band_block_for_local_transport():
+    """The default (local) demo run must NOT carry a band provenance block."""
+    async with _client() as client:
+        data = await _start_and_get_history(
+            client, "Local Co overstates recycling rates in its annual report."
+        )
+
+    assert data["transport"] == "local"
+    assert data.get("band") is None
+
+
+async def test_history_exposes_band_provenance_when_transport_is_band(band_app):
+    """transport=band → /history carries room_id + real message/virtual counts,
+    DERIVED from the run state (band_message_id / virtual flags), never hardcoded."""
+    async with _client() as client:
+        data = await _start_and_get_history(
+            client, "Brand Z labels diesel freight as carbon neutral."
+        )
+
+    assert data["transport"] == "band"
+    band = data["band"]
+    assert band["room_id"] and band["room_id"] == band_app.rooms[0][1]
+    assert band["messages_sent"] == 6
+    assert band["virtual_events"] == 2
+    assert band["messages_sent"] + band["virtual_events"] == len(data["handoffs"])
