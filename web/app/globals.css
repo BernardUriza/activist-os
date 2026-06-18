@@ -96,12 +96,12 @@ body.glass-chat {
    referenced by FiGlassConversation but never defined (transparent no-ops) —
    defining them here is what makes the money-shot contrast real. */
 .glass-chat-bubble-veto {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: color-mix(in srgb, var(--color-app-veto) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-app-veto) 45%, transparent);
 }
 .glass-chat-bubble-approved {
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: color-mix(in srgb, var(--color-app-approve) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-app-approve) 45%, transparent);
 }
 .glass-chat-bubble-assistant.aos-bubble-neutral {
   background: rgba(8, 14, 22, 0.42);
