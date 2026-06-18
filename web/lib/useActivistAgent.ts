@@ -97,6 +97,7 @@ export function useActivistAgent(opts?: { initialRunId?: string | null }): Activ
         try {
           payload = JSON.parse(ev.data);
         } catch {
+          console.warn("[useActivistAgent] dropped malformed SSE frame", ev.data);
           return;
         }
         setEvents((prev) => [...prev, payload]);
