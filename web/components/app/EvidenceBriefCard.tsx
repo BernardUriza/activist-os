@@ -1,5 +1,6 @@
 import { FileSearch, Quote, Link2, type LucideIcon } from "lucide-react";
 import type { EvidenceBrief } from "../../lib/api";
+import { CollapsibleCard } from "./CollapsibleCard";
 
 function Metric({
   icon: Icon,
@@ -21,10 +22,15 @@ function Metric({
 
 export function EvidenceBriefCard({ brief }: { brief: EvidenceBrief | null }) {
   return (
-    <section className="aos-glass-secondary rounded-xl p-4">
-      <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-app-muted">
-        <FileSearch size={15} strokeWidth={2.2} /> Evidence brief
-      </h2>
+    <CollapsibleCard
+      icon={FileSearch}
+      title="Evidence brief"
+      summary={
+        <span className="text-[11px] text-app-muted">
+          {brief ? `${brief.claims_count} claims · ${brief.sources_count} sources` : "—"}
+        </span>
+      }
+    >
       {!brief ? (
         <p className="text-sm text-app-muted">—</p>
       ) : (
@@ -36,6 +42,6 @@ export function EvidenceBriefCard({ brief }: { brief: EvidenceBrief | null }) {
           </div>
         </>
       )}
-    </section>
+    </CollapsibleCard>
   );
 }

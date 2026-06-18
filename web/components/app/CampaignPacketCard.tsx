@@ -1,6 +1,7 @@
 import { Megaphone, ListChecks, ShieldCheck, Hand, Bot, Info, type LucideIcon } from "lucide-react";
 import type { CampaignPacket } from "../../lib/api";
 import { StatusBadge } from "./StatusBadge";
+import { CollapsibleCard } from "./CollapsibleCard";
 
 function Stat({
   icon: Icon,
@@ -24,17 +25,24 @@ function Stat({
 
 export function CampaignPacketCard({ packet }: { packet: CampaignPacket | null }) {
   return (
-    <section className="aos-glass-secondary rounded-xl p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-app-muted">
-          <Megaphone size={15} strokeWidth={2.2} /> Campaign packet
-        </h2>
-        {packet?.reporter_virtual && (
+    <CollapsibleCard
+      icon={Megaphone}
+      title="Campaign packet"
+      badge={
+        packet?.reporter_virtual ? (
           <StatusBadge variant="virtual">
             <Bot size={11} strokeWidth={2.4} /> Virtual
           </StatusBadge>
-        )}
-      </div>
+        ) : undefined
+      }
+      summary={
+        <span className="text-[11px] text-app-muted">
+          {packet
+            ? `${packet.outreach_assets_count} assets · ${packet.volunteer_tasks_count} tasks · ${packet.provenance_items_count} prov`
+            : "—"}
+        </span>
+      }
+    >
       {!packet ? (
         <p className="text-sm text-app-muted">—</p>
       ) : (
@@ -83,6 +91,6 @@ export function CampaignPacketCard({ packet }: { packet: CampaignPacket | null }
           )}
         </>
       )}
-    </section>
+    </CollapsibleCard>
   );
 }
