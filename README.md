@@ -19,6 +19,24 @@ High-Stakes Workflows.
 
 Both halves auto-deploy on every push to `main` (path-scoped GitHub Actions).
 
+## What judges should try
+
+1. Open the live console: <https://proud-stone-023fae70f.7.azurestaticapps.net/app>
+2. Submit a civic concern (e.g. *"Restaurant compostable claim lacks local
+   disposal evidence"*) and hit Enter.
+3. Watch the **8 Band-coordinated handoffs** render from the real transport — the
+   `TRANSPORT` badge, the provenance room chip, and the agent sequence.
+4. Watch **Safety veto** the first campaign draft (handoff index 2 —
+   *defamation: unsupported accusation against a named target*).
+5. Watch Campaign revise and **Safety approve** the revision (handoff index 4).
+6. Open the **artifacts rail**: Evidence Brief, Safety Gate (with the rejected
+   revision on the record), Campaign Packet.
+7. Note the contract: the system *assembles* the packet — it never publishes.
+   Humans hold the send button.
+
+> The legacy 3-column dashboard is preserved at `/app?dashboard=1` as a
+> parity/debug fallback — not the primary surface.
+
 ## The problem
 
 Advocacy is easy to start and easy to get wrong. Grassroots groups carry real
@@ -121,3 +139,10 @@ Auth: OIDC federated credential, subject
 `AZURE_STATIC_WEB_APPS_API_TOKEN`, `NEXT_PUBLIC_API_URL`.
 
 See `.github/workflows/` for the full CI spec.
+
+### Deployment note
+
+The public demo is intentionally open for judging convenience. A production
+deployment should add authentication and rate limiting on `/workflow/*`
+— `/health` stays keyless for the Container Apps liveness probe. This is a
+deployment hardening step, not a flaw in the coordination contract.
