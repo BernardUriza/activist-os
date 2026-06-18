@@ -1,7 +1,6 @@
 import type { HandoffView, WorkflowHistory } from "../../lib/api";
 import { StatusBadge } from "./StatusBadge";
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+import { cap } from "../../lib/text";
 
 function stepLabel(h: HandoffView, vetoIndex: number | null): string {
   if (h.type === "safety_veto") return "Safety VETO";

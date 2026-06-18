@@ -1,6 +1,5 @@
 import type { AgentMessage } from "../../lib/workflow-presentation";
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+import { cap } from "../../lib/text";
 
 export function AgentConversationSurface({ messages }: { messages: AgentMessage[] }) {
   return (

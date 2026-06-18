@@ -16,8 +16,7 @@ import type { ChatMessage } from "@free-intelligence/core";
 
 import type { ActivistAgent } from "../../lib/useActivistAgent";
 import type { AgentChatMetadata } from "../../lib/workflow-chat";
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+import { cap } from "../../lib/text";
 
 function metaOf(m: ChatMessage): AgentChatMetadata | null {
   return (m.metadata as AgentChatMetadata | undefined) ?? null;
