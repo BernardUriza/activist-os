@@ -150,6 +150,16 @@ export interface WorkflowHistory {
   band?: BandProvenance;
 }
 
+/** One SSE frame from /workflow/{id}/events. Transport-layer type, consumed by
+ * useActivistAgent + the workflow adapters and rendered by LiveEventLog. */
+export interface StreamEvent {
+  event_type: string;
+  index?: number;
+  from_agent?: string;
+  to_agent?: string;
+  type?: string;
+}
+
 export class WorkflowNotFoundError extends Error {
   constructor(runId: string) {
     super(`workflow run not found: ${runId}`);

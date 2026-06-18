@@ -10,12 +10,12 @@ import {
   getWorkflowHistory,
   startWorkflow,
   WorkflowNotFoundError,
+  type StreamEvent,
   type WorkflowHistory,
 } from "../../lib/api";
 import { CampaignPacketCard } from "../../components/app/CampaignPacketCard";
 import { CoordinationHistory } from "../../components/app/CoordinationHistory";
 import { EvidenceBriefCard } from "../../components/app/EvidenceBriefCard";
-import { type StreamEvent } from "../../components/app/LiveEventLog";
 import { SafetyGateCard } from "../../components/app/SafetyGateCard";
 import { SemanticStatusBar } from "../../components/app/SemanticStatusBar";
 import { AgentConversationSurface } from "../../components/app/AgentConversationSurface";

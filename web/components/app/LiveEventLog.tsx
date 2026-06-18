@@ -1,10 +1,4 @@
-export interface StreamEvent {
-  event_type: string;
-  index?: number;
-  from_agent?: string;
-  to_agent?: string;
-  type?: string;
-}
+import type { StreamEvent } from "../../lib/api";
 
 const DOT: Record<string, string> = {
   workflow_started: "text-app-brand",

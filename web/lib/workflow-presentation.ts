@@ -1,5 +1,4 @@
-import type { AgentName, HandoffType, HandoffView, WorkflowHistory } from "./api";
-import type { StreamEvent } from "../components/app/LiveEventLog";
+import type { AgentName, HandoffType, HandoffView, StreamEvent, WorkflowHistory } from "./api";
 
 export interface AgentMessage {
   index: number;

@@ -1,7 +1,6 @@
 import type { ChatMessage } from "@free-intelligence/core";
 
-import type { AgentName, WorkflowHistory } from "./api";
-import type { StreamEvent } from "../components/app/LiveEventLog";
+import type { AgentName, StreamEvent, WorkflowHistory } from "./api";
 import {
   messagesFromEvents,
   messagesFromHistory,

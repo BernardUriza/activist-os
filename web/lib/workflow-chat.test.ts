@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { MOCK_WORKFLOW_HISTORY } from "./mock-workflow";
-import type { StreamEvent } from "../components/app/LiveEventLog";
+import type { StreamEvent } from "./api";
 import {
   chatMessagesFromEvents,
   chatMessagesFromHistory,

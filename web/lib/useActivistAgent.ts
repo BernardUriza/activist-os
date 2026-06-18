@@ -26,9 +26,9 @@ import {
   getWorkflowHistory,
   startWorkflow,
   WorkflowNotFoundError,
+  type StreamEvent,
   type WorkflowHistory,
 } from "./api";
-import { type StreamEvent } from "../components/app/LiveEventLog";
 import { MOCK_WORKFLOW_HISTORY } from "./mock-workflow";
 import { chatMessagesFromEvents, chatMessagesFromHistory } from "./workflow-chat";
 
