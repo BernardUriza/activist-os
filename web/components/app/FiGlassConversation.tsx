@@ -38,7 +38,7 @@ export function FiGlassConversation({ agent }: { agent: ActivistAgent }) {
           const md = metaOf(m);
           if (md?.severity === "critical") return "glass-chat-bubble-veto";
           if (md?.severity === "approved") return "glass-chat-bubble-approved";
-          return "glass-chat-bubble-assistant";
+          return "glass-chat-bubble-assistant aos-bubble-neutral";
         }}
         renderHeader={(m) => {
           const md = metaOf(m);
