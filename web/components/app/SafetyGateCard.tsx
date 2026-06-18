@@ -23,7 +23,7 @@ function Detail({
         <Icon size={14} strokeWidth={2.2} style={{ color }} />
         {badge}
       </summary>
-      <p className="mt-1.5 text-sm text-zinc-300">{text}</p>
+      <p className="mt-1.5 text-sm text-zinc-200">{text}</p>
     </details>
   );
 }

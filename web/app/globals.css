@@ -9,7 +9,7 @@
   --color-app-border: #243049;   /* hairlines */
   --color-app-brand: #4f8cff;    /* primary action */
   --color-app-accent: #34d399;   /* live / streaming emphasis */
-  --color-app-muted: #8aa0c6;    /* secondary text */
+  --color-app-muted: #aebfdf;    /* secondary text — lifted for on-camera legibility */
 
   /* ── Activist OS console tokens (Safety-Gate money-shot) ──────────────── */
   --color-app-veto: #f87171;       /* veto / blocked — red */
@@ -25,7 +25,7 @@
     overflow-x: clip;
   }
   body {
-    @apply min-h-screen bg-app-bg text-zinc-200 antialiased;
+    @apply min-h-screen bg-app-bg text-zinc-100 antialiased;
     overflow-x: clip;
   }
 }
@@ -39,6 +39,7 @@ body.glass-chat {
   --glass-chat-accent-from: #4f8cff;
   --glass-chat-accent-to: #34d399;
   --glass-chat-accent-text: #9ec1ff;
+  --glass-chat-text-muted: #aebccd;
 }
 
 /* ── Activist OS visual atmosphere ───────────────────────────────────────── */
@@ -65,29 +66,29 @@ body.glass-chat {
 
 /* ── Glass opacity hierarchy ─────────────────────────────────────────────── */
 .aos-glass-primary {
-  background: rgba(8, 14, 22, 0.78);
+  background: rgba(17, 25, 38, 0.80);
   backdrop-filter: blur(22px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
 }
 
 .aos-glass-secondary {
-  background: rgba(8, 14, 22, 0.64);
+  background: rgba(17, 25, 38, 0.68);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .aos-glass-critical {
-  background: rgba(9, 15, 24, 0.82);
+  background: rgba(18, 24, 34, 0.84);
   backdrop-filter: blur(22px);
-  border: 1px solid rgba(239, 68, 68, 0.28);
+  border: 1px solid rgba(239, 68, 68, 0.45);
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.32);
 }
 
 .aos-glass-ghost {
-  background: rgba(8, 14, 22, 0.42);
+  background: rgba(15, 22, 34, 0.52);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Transcript severity hierarchy. The Safety VETO (red) and APPROVED (green)
@@ -96,16 +97,16 @@ body.glass-chat {
    referenced by FiGlassConversation but never defined (transparent no-ops) —
    defining them here is what makes the money-shot contrast real. */
 .glass-chat-bubble-veto {
-  background: color-mix(in srgb, var(--color-app-veto) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-app-veto) 45%, transparent);
+  background: color-mix(in srgb, var(--color-app-veto) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-app-veto) 64%, transparent);
 }
 .glass-chat-bubble-approved {
-  background: color-mix(in srgb, var(--color-app-approve) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-app-approve) 45%, transparent);
+  background: color-mix(in srgb, var(--color-app-approve) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-app-approve) 64%, transparent);
 }
 .glass-chat-bubble-assistant.aos-bubble-neutral {
-  background: rgba(8, 14, 22, 0.42);
-  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(15, 22, 34, 0.52);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ── Landing fi-glass system — scoped under .aos-landing so it never touches

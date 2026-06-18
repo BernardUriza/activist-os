@@ -61,13 +61,13 @@ export function FiGlassConversation({ agent }: { agent: ActivistAgent }) {
           if (!md) return null;
           if (md.severity === "critical")
             return (
-              <span className="rounded border border-app-veto/50 bg-app-veto/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-app-veto">
+              <span className="rounded border border-app-veto/60 bg-app-veto/20 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-app-veto">
                 VETO
               </span>
             );
           if (md.severity === "approved")
             return (
-              <span className="rounded border border-app-approve/50 bg-app-approve/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-app-approve">
+              <span className="rounded border border-app-approve/60 bg-app-approve/20 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-app-approve">
                 APPROVED
               </span>
             );
