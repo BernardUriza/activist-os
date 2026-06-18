@@ -5,7 +5,7 @@ capture first, narrate per phrase later (see the picture-locked workflow). Total
 budget: **4:00**. The money shot is the **Safety veto → revision → approval**
 loop; everything else frames it.
 
-Live surface to record: <https://proud-stone-023fae70f.7.azurestaticapps.net/app>
+Live surface to record: <https://aos.bernarduriza.com/app> (friendly domain — the one presented; not the `*.azurestaticapps.net` platform hostname)
 
 ---
 
