@@ -8,9 +8,9 @@
  * transcript. The visible thread is exposed as core ChatMessage[] (mapped by
  * lib/workflow-chat), so a fi-glass AgentConversationSurface can render it.
  *
- * This is the workflow twin of useTemplateAgent: same AgentHook contract, a
- * different transport. The default /app dashboard keeps its own inline transport
- * untouched — this hook exists for the fi-glass canary surface only.
+ * Implements core's AgentHook over the workflow transport — the hook behind the
+ * primary fi-glass /app surface. The legacy /app?dashboard=1 keeps its own inline
+ * transport untouched.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
