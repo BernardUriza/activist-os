@@ -27,9 +27,9 @@ export function FiGlassConversation({ agent }: { agent: ActivistAgent }) {
   const conversation = useAgentConversation(agent, { externalMessages: agent.messages });
 
   return (
-    <div className="agent-shell">
-      <AgentConversationSurface
+    <AgentConversationSurface
         conversation={conversation}
+        layout="contained"
         composerPlaceholder="Describe a civic concern — the band coordinates it live…"
         newChatLabel="New concern"
         composerBoxClassName="glass-chat-composer"
@@ -79,6 +79,5 @@ export function FiGlassConversation({ agent }: { agent: ActivistAgent }) {
           );
         }}
       />
-    </div>
   );
 }

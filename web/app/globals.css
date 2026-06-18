@@ -30,6 +30,17 @@
   }
 }
 
+/* og118-style depth treatment from fi-glass (.glass-chat). The framework owns
+   the layered-gradient treatment; Activist OS only re-tints the brand tokens. */
+body.glass-chat {
+  --glass-chat-bg-from: #0b1220;
+  --glass-chat-bg-mid: #131c2e;
+  --glass-chat-bg-glow: rgba(79, 140, 255, 0.1);
+  --glass-chat-accent-from: #4f8cff;
+  --glass-chat-accent-to: #34d399;
+  --glass-chat-accent-text: #9ec1ff;
+}
+
 /* ── Activist OS visual atmosphere ───────────────────────────────────────── */
 #synapse {
   position: fixed;

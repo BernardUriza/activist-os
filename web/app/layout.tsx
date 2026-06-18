@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "../lib/site";
+import "fi-glass/theme.css";
+import "fi-glass/glass-chat.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -41,7 +43,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className="glass-chat">
+        <div className="glass-chat-watermark" aria-hidden="true" />
         <canvas id="synapse" aria-hidden="true" />
         <Script src="/synapse-field.js" strategy="afterInteractive" />
         <div className="aos-app-shell">{children}</div>
