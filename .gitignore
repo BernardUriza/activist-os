@@ -19,3 +19,4 @@ storage/
 
 # OS / editor
 .DS_Store
+.submission/
