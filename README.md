@@ -14,14 +14,14 @@ High-Stakes Workflows.
 
 | Surface | URL |
 |---|---|
-| Web (fi-glass chat + artifacts rail) | https://proud-stone-023fae70f.7.azurestaticapps.net/app |
+| Web (fi-glass chat + artifacts rail) | https://aos.bernarduriza.com/app |
 | API | https://activist-os-api.greenbay-d46a7a63.eastus.azurecontainerapps.io |
 
 Both halves auto-deploy on every push to `main` (path-scoped GitHub Actions).
 
 ## What judges should try
 
-1. Open the live console: <https://proud-stone-023fae70f.7.azurestaticapps.net/app>
+1. Open the live console: <https://aos.bernarduriza.com/app>
 2. Submit a civic concern (e.g. *"Restaurant compostable claim lacks local
    disposal evidence"*) and hit Enter.
 3. Watch the **8 Band-coordinated handoffs** render from the real transport — the

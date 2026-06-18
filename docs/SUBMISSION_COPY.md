@@ -4,7 +4,7 @@ Paste-ready copy for the lablab.ai / Band of Agents submission form. Every claim
 here is backed by the live demo and the canonical contract.
 
 - **Project name:** Activist OS
-- **Live demo:** <https://proud-stone-023fae70f.7.azurestaticapps.net/app>
+- **Live demo:** <https://aos.bernarduriza.com/app>
 - **Track:** Regulated & High-Stakes Workflows
 
 ---
@@ -34,7 +34,7 @@ Humans hold the send button.
 
 ## How to use the demo
 
-1. Open <https://proud-stone-023fae70f.7.azurestaticapps.net/app>.
+1. Open <https://aos.bernarduriza.com/app>.
 2. Submit a civic concern (e.g. *"Restaurant compostable claim lacks local
    disposal evidence"*).
 3. Watch the eight Band-coordinated handoffs stream in (TRANSPORT badge +

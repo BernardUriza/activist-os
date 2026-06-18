@@ -10,9 +10,9 @@ shot list in [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md) and the paste copy in
 - [ ] No extra Band workflows run before recording (the take uses one real run).
 
 ## 1. URLs
-- [ ] Landing — <https://proud-stone-023fae70f.7.azurestaticapps.net/>
-- [ ] App — <https://proud-stone-023fae70f.7.azurestaticapps.net/app>
-- [ ] Dashboard fallback — <https://proud-stone-023fae70f.7.azurestaticapps.net/app?dashboard=1>
+- [ ] Landing — <https://aos.bernarduriza.com/>
+- [ ] App — <https://aos.bernarduriza.com/app>
+- [ ] Dashboard fallback — <https://aos.bernarduriza.com/app?dashboard=1>
 
 ## 2. Browser setup
 - [ ] Incognito / clean window.
